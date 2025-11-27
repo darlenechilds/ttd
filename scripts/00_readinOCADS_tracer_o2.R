@@ -14,7 +14,7 @@ urls <- c(
 )
 
 
-fn <- urls[5]
+fn <- urls[5]  # file working on - sadly, still manual b/c cant work around cfc header mismatch
 
 # find which line the EXPOCODE starts adn extract data
 lines <- readLines(fn)
@@ -27,13 +27,13 @@ d <- read.csv(fn, skip = skip_no, header = F)
 units <- d[1,]  #double check units
 d <- d[-1,]
 colnames(d) <- header
-d <- d[which(d$SF6_FLAG_W==2),]  # find sf6 and aux data using SF6_FLAG_W, 2 = gooda
+d <- d[which(d$SF6_FLAG_W==2),]  # find sf6 and aux data using SF6_FLAG_W, 2 = good
 plot(d$LONGITUDE,d$LATITUDE)
 
 
 d_extracted <- d %>%
-  select("EXPOCODE", "STNNBR", "DATE",  "LATITUDE",
-                             "LONGITUDE", "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
+  select("EXPOCODE", "STNNBR", "DATE",  "LATITUDE", "LONGITUDE",
+                              "SAMPNO","CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
                              "OXYGEN" ,"OXYGEN_FLAG_W" , "SF6","SF6_FLAG_W",
          "CFC-12","CFC-12_FLAG_W")
 
@@ -41,7 +41,7 @@ d_extracted <- d %>%
 
 
 colnames(d_extracted) <- c("EXPOCODE", "STNNBR", "DATE",  "LATITUDE",
-                             "LONGITUDE", "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
+                             "LONGITUDE","SAMPNO","CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
                              "OXYGEN" ,"OXYGEN_FLAG_W" , "SF6","SF6_FLAG_W",
                              "CFC12","CFC12_FLAG_W")
 
@@ -50,7 +50,5 @@ colnames(d_extracted) <- c("EXPOCODE", "STNNBR", "DATE",  "LATITUDE",
 s <- rbind(s,d_extracted)
 
 
-"../data/another_file.txt"
-
-
 write.csv(s,"C:/Users/childsd/repospace/ttd/data/ocads2015_2020.csv",row.names = F)
+
