@@ -1,7 +1,7 @@
-#compiles unsubmitted data from "all_chem" type files which contains data submitted to teh data shop
+#compiles unsubmitted data from "all_chem" type files which contains data submitted to teh data shop, files are not consitent wrt headers, structure, etc., its a manual process
 
 rm(list = ls())
-s <- NULL
+# s <- NULL
 library(dplyr)
 library(oce)
 
@@ -21,7 +21,7 @@ year_info <- data.frame(
   ),  stringsAsFactors = FALSE)
 
 
-year <- 2020  # sadly this is a manual process as variables/headers/etc are inconsistent
+year <- 2016  # sadly this is a manual process as variables/headers/etc are inconsistent
 row <- year_info[year_info$year == year, ]
 fn <- row$fn
 
@@ -34,7 +34,7 @@ d$CFC12_FLAG_W <- NA
 
 # Select columns by name
 d_extracted <- d %>%
-  select("cruise_number", "event", "date","sample_id",
+  select("cruise_number", "event", "Date","sample_id",
          "latitude","longitude", "PrDM","T090C", "Sal00", "SALNTY",
          "sf6_fmolperkg","SF6_FLAG_W","f12_pmolperkg","CFC12_FLAG_W")
 
@@ -42,23 +42,59 @@ colnames(d_extracted) <- c("EXPOCODE", "STNNBR", "DATE", "SAMPNO",
                            "LATITUDE","LONGITUDE", "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
                             "SF6","SF6_FLAG_W","CFC12","CFC12_FLAG_W")
 
-
-# duplicates in d_extracted
-d_extracted[duplicated(d_extracted$SAMPNO) | duplicated(d_extracted$SAMPNO, fromLast = TRUE), ]
-
-# duplicates in o2_extracted
-o2_extracted[duplicated(o2_extracted$SAMPNO) | duplicated(o2_extracted$SAMPNO, fromLast = TRUE), ]
-
-
-#need to get o2 data from SRC
-o2 <- read.csv("C:/Users/childsd/repospace/ttd/data/UNSUB_oxygen.csv")
-o2_extracted <- o2 %>%
-  select("SAMPNO","OXYGEN")
-o2_extracted$OXYGEN_FLAG_W <- NA
-
-d_extracted <- merge(d_extracted,o2_extracted,by = "SAMPNO", all.x = TRUE)
-
 head(d_extracted)
 
+#------------------
+# 2025, duplicate measurements were taken at every station
+dups <- d_extracted[duplicated(d_extracted$SAMPNO) | duplicated(d_extracted$SAMPNO, fromLast = TRUE), ]
+ind <- which(d_extracted$SAMPNO %in% dups$SAMPNO)
+d_extracted <- d_extracted[-ind,]  # remove duplicats, will get them back in later
+# compute mean + sd for SF6 and f12per SAMPNO
+stats <- aggregate(cbind(SF6 , CFC12) ~ SAMPNO, data = dups,
+                   FUN = function(x) c(mean = mean(x, na.rm = TRUE),
+                                       sd   = sd(x, na.rm = TRUE)))
+
+stats$CFC12_mean <- stats$CFC12[, "mean"]
+stats$CFC12_sd   <- stats$CFC12[, "sd"]
+stats$OXYGEN <- NULL
+
+stats$SF6_mean <- stats$SF6[, "mean"]
+stats$SF6_sd   <- stats$SF6[, "sd"]
+stats$SF6 <- NULL
+
+dups_final <- merge(dups, stats, by = "SAMPNO", all.x = TRUE)
+
+dups_extracted <- dups_finala %>%
+  select("EXPOCODE", "STNNBR", "DATE", "SAMPNO", 
+          "LATITUDE","LONGITUDE", "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
+          "SF6_mean","SF6_FLAG_W","CFC12_mean","CFC12_FLAG_W")
+
+colnames(dups_extracted) <- c("EXPOCODE", "STNNBR", "DATE", "SAMPNO", 
+                           "LATITUDE","LONGITUDE", "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
+                           "SF6","SF6_FLAG_W","CFC12","CFC12_FLAG_W")
+
+d_extracted <- rbind.data.frame(d_extracted,dups_extracted)
+#----------
+#correct cruise id for 2018
+# unique(d_extracted$EXPOCODE)
+# d_extracted$EXPOCODE <- rep("HUD2018008",length(d_extracted$EXPOCODE))
+
+#---------
+#fix cruise id for 2022
+s$EXPOCODE[s$EXPOCODE == "AT4802 AT4805"] <- "AT4805"
+s$EXPOCODE[s$EXPOCODE == "AT4802"] <- "AT4805"
+unique(s$EXPOCODE)
+
+
+
 s <- rbind(s,d_extracted)  
-write.csv(s,"UNSUB_tracers_o2.csv")
+write.csv(s,"data/UNSUB_tracers.csv")
+
+#remove duplicates as 2016 was added to s 2x, one day i promise to do better...
+s <- read.csv("data/UNSUB_tracers_o2a.csv")
+dup <- s[duplicated(s$SAMPNO),]
+s <- s[!duplicated(s$SAMPNO), ]
+#check
+sunique <- unique(s$SAMPNO)  
+unique(s$EXPOCODE)
+
