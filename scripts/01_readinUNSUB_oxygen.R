@@ -19,7 +19,7 @@ year_datafiles <- data.frame(
     "R:/Science/BIODataSvc/SRC/2020s/2025/LAT2025146/BioChem/LAT2025146_ AZOMP_Winkler_QAQCd.xlsx"),  stringsAsFactors = FALSE)
 
 
-year <- 2015  # sadly this is a manual process 
+year <- 2016  # sadly this is a manual process 
 row <- year_datafiles[year_datafiles$year == year, ]
 fn <- row$fn
 
@@ -70,12 +70,12 @@ d_extracted$OXYGEN_mlperl <- as.numeric(d_extracted$OXYGEN_mlperl)
 #convert DO ml/l to umol/kg - (1 kg/m^3 = 0.001 kg/L)
 theta <- swTheta(d_extracted$CTDSAL, d_extracted$CTDTMP, d_extracted$CTDPRS, referencePressure = 0)
 dens <- (swRho(d_extracted$CTDSAL,theta,d_extracted$CTDPRS))/1000  # kg/L
-conv <-  44.66 #(1 ml O2 = 44.66 umol O2 @ stp, derived from gas law, molar volumn, 1 mole of O2 = 22.4 L)
+conv <-  44.66 #(1 ml O2 = 44.66 umol O2 @ stp, derived from gas law, molar volumn, 1 mole of O2 = 22.4 L, 1/22.3916*10^6)
 d_extracted$OXYGEN_umolperkg <- d_extracted$OXYGEN_mlperl*conv/dens
 
 head(d_extracted)
 s <- rbind(s,d_extracted)  
-write.csv(s,"UNSUB_oxygen.csv")
+write.csv(s,"data/UNSUB_oxygen_2016.csv")
 
 # fix oxygen file using correct density
 d <- read.csv("data/UNSUB_oxygen_3.csv")
