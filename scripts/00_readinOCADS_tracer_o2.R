@@ -1,4 +1,6 @@
 #read in data from OCADS website, extract data and save it in the data folder
+# qa/qc ocads flags https://www.ncei.noaa.gov/products/ocean-carbon-acidification-data-system
+
 rm(list = ls())
 library(dplyr)
 
