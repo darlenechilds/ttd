@@ -12,11 +12,12 @@ urls <- c(
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237232/18DL20190601_hy1.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237146/18HU20180425_hy1.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0186204/18HU20160430.exc.csv",
-  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0160487/18HU20150504.exc.csv"
-)
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0160487/18HU20150504.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/archive/arc0237/0302739/1.1/data/0-data/18QL23573_data.csv"
+  )
 
 
-fn <- urls[5]  # file working on - sadly, still manual b/c cant work around cfc header mismatch
+fn <- urls[6]  # file working on - sadly, still manual b/c cant work around cfc header mismatch
 
 # find which line the EXPOCODE starts adn extract data
 lines <- readLines(fn)
@@ -25,7 +26,7 @@ header <- strsplit(header, ",")[[1]]
 skip_no <- grep("^EXPO", lines, value = F)
 
 #read in ocads
-d <- read.csv(fn, skip = skip_no, header = F)
+d <- read.csv(fn, skip = 0, header = T)
 units <- d[1,]  #double check units
 d <- d[-1,]
 colnames(d) <- header
