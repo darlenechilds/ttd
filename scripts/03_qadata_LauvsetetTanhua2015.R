@@ -55,7 +55,7 @@ ref_d_lsw$dis <- dis[, "distance"]
 # Keep those within 2° arc distance
 ref_2deg <- ref_d_lsw[ref_d_lsw$dis <= max_m, ]
 
-plot(ref_2deg$G2longitude,ref_2deg$G2latitude)
+points(ref_2deg$G2longitude,ref_2deg$G2latitude)
 
 #find NEADW / lat part only to keep full profiles for interpolation
 ref_2deg$sigma2 <- swSigma2(ref_2deg$G2salinity,ref_2deg$G2theta, ref_2deg$G2pressure)
@@ -77,40 +77,36 @@ names(profiles)
 
 # Interpolate each sf6 profile to the pressure grid, zout, rule 2 = if outside range use endpoint
 interp_sf6 <- lapply(seq_along(profiles), function(i) {
-  p <- profiles[[i]]data.frame(profile = i,pressure = zout,
+  p <- profiles[[i]]
+    data.frame(profile = i,pressure = zout,
     sf6 = approx(p$G2pressure, p$G2sf6,  xout = zout, rule = 2)$y,
     sigma2 = approx(p$G2pressure, p$sigma2, xout = zout, rule = 2)$y
   )
 })
 
-interp_sf6_df <- as.data.frame(do.call(cbind, interp_list))
-names(df) <- paste0("profile_", seq_along(interp_list))
 
+interp_sf6 <- lapply(interp_sf6, function(x) {
+  names(x) <- c("profile", "pressure","sf6","sigma2")
+  return(x)
+})
 
-interp_df <- do.call(
-  rbind,
-  lapply(seq_along(interp_list), function(i) {
-    df <- interp_list[[i]]
-    df$stn <- i
-    df
-  })
-)
+#give header names
+interp_sf6_df <- as.data.frame(do.call(rbind, interp_sf6))
+head(interp_sf6_df)
 
-stn_id <- names(profiles)
 #calculate the mean of each profile for the neadw
 #find neadw, part 2, i.e. sigma2
-head(interp_df)
-ref_neadw <- interp_df[interp_df$sigma2 > 36.965 & interp_df$sigma2 < 37.04,]
+ref_neadw <- interp_sf6_df[interp_sf6_df$sigma2 > 36.965 & interp_sf6_df$sigma2 < 37.04,]
 ustn <- unique(ref_neadw$profile)
 i <- ustn[3]
 s <- NULL
-for (i in ref_neadw$profile){
-  e <- ref_neadw[ref_neadw==i,]
+for (i in ustn){
+  e <- ref_neadw[ref_neadw$profile==i,]
   e <- e[!is.na(e$sf6),]
   meansf6_neadw <- mean(e$sf6)
   sdsf6_neadw <- sd(e$sf6)
-  f <- c(i,meansf6_neadw,sdsf6_neadw)
-  s <- rbind(f,s)
+  f <- data.frame(profile = i,mean_sf6 = meansf6_neadw,sd_sf6 = sdsf6_neadw)
+  s <- rbind.data.frame(s,f)
 }
 head(s)
 # need to put it all back together.  
