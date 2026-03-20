@@ -1,0 +1,17 @@
+2022_smithetal
+use vent tracers adn radioactive tracers released from nuclear fuel reprocessing plants
+2015, combined study in arctic, us healy - chukchi to Makarov basin, Germanys polarsterm Barents sea to Eurasian basin - swtizerland in 2012
+
+determint the extent where 129I and cfc and sf6 can be sued to constrain delta and gamma of the ttd - provides insite into mixing, and advection for upper kilometer of water column in the arctic
+
+I129 - discharfed from shellafield UK an lahague in to N.sea - Norwegian coastal current (NCC)
+
+sat rates of cfc = 85%-100%, Here 90% used as input function 
+
+range of transit times = tracers with diff input functions will weigh the ttd in different ways and can profide diff, estimates of tracer age. 
+
+ttd is an intrinsic property of the flow from a specific source regime - based on obs that the conc of a tracer at a point r and time t, ...  c equation...
+to emply that equation G must be det at each pt in the ocean for which we habe data for - preb studies transport at a steady Gt ass to habe hte form of hte IG
+
+advantage of IG - defined by mean age and width generate by 2 parameters , t time since meas tracer was that of hte input function (tracer age)
+tmax 0- mas malue of Gt in ttd. 

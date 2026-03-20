@@ -1,0 +1,10 @@
+Reviewers; 
+Kristen 
+Chris
+Emmanual
+
+
+authors?  jsmith, 
+	lraimondo, 
+	kazetsu-scott - cfc12 analysis, 	
+	zeilang - mixed layer depth calculation 

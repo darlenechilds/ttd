@@ -1,0 +1,23 @@
+30 year time series - Raimondi 2021
+... suggested that, despite the high concentrations of Cant in Labrador Sea, the exchange of Co2 across the sea surface in the LW cannot keep pace with its transport in to the ocean interior - highly undersaturated with respect to Cqnt in teh atmosphere.  
+
+ - shallow convection causes the inventory of interior gases to decrease (dilution - due to currents such as WGC adn LC! and temp increase??)
+
+at time of these studies...still not psooible to define whether apparant changes in column inventory were part of a long term trend or the result of natural (ie. decadal) variablility in water mass formation.  
+
+
+Data - measurements subject to a secondary quality control and compiles in the GLODAPv2 data product (Olsen et al., 2016), further secondary control using toolbox of Lauvset and Tanhua, 2015
+
+
+advection = single age or transit time
+
+
+used/reconstructed the time-varying saturation fo the time of water mass formation - we assumed that the water lying between the seasonal thermocline (>200m) and the maximum mixed layer depth in the central basin best represents the water that was in contact with the atmosphere during winter.  
+
+MLD - was assessed through the methodology described by Yahayaev and Loder (2016) and using shipboard and argo floats data collected by fisherines and oceans Canada - yashayaev and loder, 2017....  a linear regression was obtaine to parameterize the MLD for yrs prior to 2000  - when argo floats started complementing hte ar7w line observations - used MLD-4 model 
+
+used MLR of observed saturations to estimate the saturation of CFC-12 and SF6 
+
+
+
+In Raimondi et al., a "constant disequilibrium" means that the model assumes ocean surface pCO₂ was always a fixed amount below atmospheric pCO₂ at the time the water was last ventilated — even though this is a simplification of real-world variability.

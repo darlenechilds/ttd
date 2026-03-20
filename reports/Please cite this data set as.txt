@@ -1,0 +1,7 @@
+Please cite this data set as:
+
+Jones, P., R. Gershey, and G. Harrison . 2012. Carbon dioxide, hydrographic, and chemical data obtained 
+during the R/V Hudson cruise in the North Atlantic Ocean on CLIVAR Repeat Section AR07W_2000 
+(20 May - 08 June, 2000). http://cdiac.ornl.gov/ftp/oceans/CLIVAR/AR07W/AR07W_2000/. 
+Carbon Dioxide Information Analysis Center, Oak Ridge National Laboratory, US Department 
+of Energy, Oak Ridge, Tennessee. doi: 10.3334/CDIAC/OTG.WOCE_AR07W_2000. 

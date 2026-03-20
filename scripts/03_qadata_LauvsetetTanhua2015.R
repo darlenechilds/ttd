@@ -64,7 +64,6 @@ ref_neadw <- ref_2deg[ref_2deg$G2latitude > 56 & ref_2deg$G2latitude <60,]
 points(ref_neadw$G2longitude, ref_neadw$G2latitude, col = "red")
 
 #interpolate profiles
-# need to interpolate profiles for both ref and test stations
 #make unique stations 
 ref_neadw$stn <- as.numeric(paste(ref_neadw$G2year,ref_neadw$G2station,sep = ""))
 
@@ -79,29 +78,51 @@ names(profiles)
 interp_sf6 <- lapply(seq_along(profiles), function(i) {
   p <- profiles[[i]]
     data.frame(profile = i,pressure = zout,
-    sf6 = approx(p$G2pressure, p$G2sf6,  xout = zout, rule = 2)$y,
-    sigma2 = approx(p$G2pressure, p$sigma2, xout = zout, rule = 2)$y
+    sf6 = approx(p$G2pressure, p$G2sf6,  xout = zout, rule = 2)$y
   )
 })
 
-
+#give header names
 interp_sf6 <- lapply(interp_sf6, function(x) {
-  names(x) <- c("profile", "pressure","sf6","sigma2")
+  names(x) <- c("profile", "pressure","sf6")
   return(x)
 })
 
-#give header names
+#convert to dataframe (from list)
 interp_sf6_df <- as.data.frame(do.call(rbind, interp_sf6))
 head(interp_sf6_df)
 
+
+#merge with meta data
+stn_id <- unique(ref_neadw$stn)
+profile <- 1:138
+#make a new dataframe
+df <- data.frame(profile = profile,stn = stn_id)
+df2 <- merge(interp_sf6_df,df,by = "profile")
+
+#make dataframe of meta data to merge with interp profiles
+meta <- ref_neadw %>%
+  select("G2expocode", "G2station", "G2year",  "G2latitude", "G2longitude",
+         "dis", "stn")
+unique(meta$G2station)
+
+#interp_w_meta <- merge(df2,meta,by = "stn")
+
+# ref_interp <- merge(df2,ref_neadw,by = "stn",all.x = TRUE)
+
+
+
+
+
+
 #calculate the mean of each profile for the neadw
 #find neadw, part 2, i.e. sigma2
-ref_neadw <- interp_sf6_df[interp_sf6_df$sigma2 > 36.965 & interp_sf6_df$sigma2 < 37.04,]
-ustn <- unique(ref_neadw$profile)
+ref_neadw_2 <- interp_sf6_df[interp_sf6_df$sigma2 > 36.965 & interp_sf6_df$sigma2 < 37.04,]
+ustn <- unique(ref_neadw_2$profile)
 i <- ustn[3]
 s <- NULL
 for (i in ustn){
-  e <- ref_neadw[ref_neadw$profile==i,]
+  e <- ref_neadw_2[ref_neadw_2$profile==i,]
   e <- e[!is.na(e$sf6),]
   meansf6_neadw <- mean(e$sf6)
   sdsf6_neadw <- sd(e$sf6)
@@ -111,38 +132,16 @@ for (i in ustn){
 head(s)
 # need to put it all back together.  
 
+#need to get station ids merged with means and sds
+stn_id <- unique(ref_neadw$stn)
+profile <- 1:138
+#make a new dataframe
+df <- data.frame(profile = profile,stn = stn_id)
+df2 <- merge(s,df,by = "profile")
+ref_means <- merge(df2,ref_neadw,by = "stn",all.x = TRUE)
 
+#us this to compare test dataset to!
+ref_means_u <- ref_means[!duplicated(ref_means$mean_sf6),]
 
-
-
-
-s
-
-#-- get cruise would like to test
-d <- read.csv("data/OCADS_tracers_o2.csv")
-ucruise <- unique(d$EXPOCODE)
-d <- d[d$EXPOCODE==ucruise[3],]
-plot(d$LONGITUDE,d$LATITUDE)
-d <- d[d$LATITUDE>50,]
-d$theta <- swTheta(d$CTDSAL,d$CTDTMP,d$CTDPRS)
-d$sigma2 <- swSigma2(d$CTDSAL,d$theta, d$CTDPRS)
-d_neadw <- d[d$LATITUDE > 56 & d$LATITUDE <60,]
-d_neadw <- d_neadw[d_neadw$sigma2 > 36.965 & d_neadw$sigma2 < 37.04,]
-
-
-## things are getting messy but we do have ref stations (stations_within_2deg) and test stations (d_neadw)
-# need to interpolate profiles for both ref and test stations
-#create unique stations
-ref_neadw_2deg$stn <- as.numeric(paste(ref_neadw_2deg$G2year,ref_neadw_2deg$G2station,sep = ""))
-
-# Define a common pressure grid
-zout <- seq(1700, 2800, by = 50)
-
-# Split the data by event
-profiles <- split(ref_neadw_2deg, ref_neadw_2deg$stn)
-
-# Interpolate each sf6 profile to the common pressure grid
-interp_list_sf6 <- lapply(profiles, function(p) {
-  approx(p$G2pressure , p$G2sf6 , xout = zout, rule = 2)$y})
-
+write.csv(ref_means_u,"data/ref_means.csv")
 

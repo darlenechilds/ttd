@@ -1,0 +1,13 @@
+Reviewers; 
+Kristen 
+Chris
+Emmanual
+Chantelle
+Clark
+Igor
+
+
+authors?  jsmith, Dr. Smith method. 
+	lraimondo, refined Classical "Smith Method". 
+	kazetsu-scott - cfc12 analysis, first to present percent saturations wrt to timeseries in the LSea. First to also state it varys.  	
+	zeilang - mixed layer depth calculation 

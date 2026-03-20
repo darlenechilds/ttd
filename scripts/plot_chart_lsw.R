@@ -43,9 +43,9 @@ legend("bottomleft", seg.len = 3, cex = 0.8,
 rect(xleft = -65.5, xright = -32.2, ybottom = 50.5, ytop = 62.3, 
      border = "red", lwd = 2)
 lines(lo,la,col = "red")
-lines(lo_ref,la_ref, col = "blue")
+# lines(lo_ref,la_ref, col = "blue")
 
-# test that i have the right coordinates for the ar7w line; check!
-ar <- ref_neadw[ref_neadw$G2expocode=="18DL20200722",]  # from 03 script, i.e. ocads data for 2020
-lo_ref <- unique(ar$G2longitude)
-la_ref <- unique(ar$G2latitude)
+# # test that i have the right coordinates for the ar7w line; check!
+# ar <- ref_neadw[ref_neadw$G2expocode=="18DL20200722",]  # from 03 script, i.e. ocads data for 2020
+# lo_ref <- unique(ar$G2longitude)
+# la_ref <- unique(ar$G2latitude)

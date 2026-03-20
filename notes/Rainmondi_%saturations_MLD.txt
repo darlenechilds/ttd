@@ -1,0 +1,9 @@
+Rainmondi_%saturations_MLD
+
+"Lorenza Raimondi’s 2023 study used mixed‐layer depth (MLD) to account for the incomplete gas saturation of transient tracers (like CFCs) at the ocean surface when calculating surface saturation in her Transit Time Distribution (TTD) tracer method. "
+
+"Raimondi et al. used observed winter mixed‑layer depths to infer the fraction of water subject to gas exchange versus entrained older water. A deeper mixed layer indicates more subsidence of undersaturated water, lowering overall saturation at outcrop sites."
+
+""Sensitivity tests in her model showed that assuming constant 100 % saturation slightly overestimates tracer ages. Incorporating MLD‑derived, time‑varying saturation provided more accurate and realistic results "
+
+"The coefficients a, b, and c come from fitting the equation to a dataset of observed saturation values in newly formed Labrador Sea Water, paired with historical atmospheric tracer growth rates and winter MLD for each year."

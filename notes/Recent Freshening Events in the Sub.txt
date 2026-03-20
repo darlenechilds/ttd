@@ -1,0 +1,32 @@
+Recent Freshening Events in the Subpolar North Atlantic: A Literature Overview
+The subpolar North Atlantic has experienced an exceptional freshening event beginning around 2012, culminating in record-low salinities observed by 2016. This phenomenon is well documented in recent studies that build on historical understanding of freshwater anomalies, including the Great Salinity Anomalies (GSAs) of the 20th century.
+
+A major contributor to this freshening was identified by Holliday et al. (2020), who attributed it to changes in wind-driven ocean circulation, which rerouted Arctic-origin freshwater into the eastern subpolar gyre. Their analysis, using observations and reanalysis data, characterized this event as unprecedented in the last 120 years.
+
+Building on this, Fox et al. (2022) used high-resolution ocean models and observational data to show that the Labrador Sea itself played a critical role in exporting colder and fresher surface waters eastward. They linked this export to a reduction in surface heat loss in the Labrador Sea during the same period, which reduced deep convection and allowed surface freshwater to spread more broadly.
+
+Additional studies such as Fried et al. (2024) documented ongoing freshening in the Irminger Current region, while Kieke and Yashayaev (2015) and Yashayaev and Loder (2016) provide important context on the interannual variability and long-term changes in Labrador Sea Water formation, emphasizing its sensitivity to freshwater inputs.
+
+Collectively, these findings underscore a recent shift in subpolar Atlantic stratification, possibly linked to broader changes in Arctic freshwater budgets, atmospheric forcing, and the Atlantic Meridional Overturning Circulation (AMOC).
+
+📚 Suggested References to Include
+Holliday et al. (2020)
+Ocean circulation causes the largest freshening event for 120 years in the eastern subpolar North Atlantic.
+Nature Communications
+
+Fox et al. (2022)
+Exceptional freshening and cooling in the eastern subpolar North Atlantic over the past 120 years.
+Nature Communications
+
+Fried et al. (2024)
+Recent freshening of the subpolar North Atlantic increased transport of lighter waters from 2014–2022.
+(Try searching this in journals like Geophysical Research Letters or JPO — may be preprint or recently published.)
+
+Yashayaev & Loder (2016)
+Recurrent replenishment of Labrador Sea Water and associated decadal-scale variability.
+Journal of Geophysical Research
+
+Kieke & Yashayaev (2015)
+Studies of Labrador Sea Water formation and variability in the subpolar North Atlantic.
+Progress in Oceanography
+
