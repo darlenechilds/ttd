@@ -5,7 +5,7 @@ library(fields)
 library(cmocean)
 
 # Load data
-d <- read.csv("data/UNSUB_tracers_o2.csv")  
+d <- read.csv("data/processed/UNSUB_tracers_o2.csv")  
 btm <- read.csv("E:/A_docs/2025/2025_labSea/reports/ventialation_labSea_2015_2025/data/btm.csv")  
 
 d <- d[!is.na(d$OXYGEN_umolperkg), ]
@@ -80,15 +80,15 @@ years_to_plot <- years[1:min(9, length(years))]
 
 # section plots... 
 # Save to a PNG 
-png("output/do_lab_meas_2018.png", width = 1800, height = 1800, res = 200)
+# png("output/do_lab_meas_2018.png", width = 1800, height = 1800, res = 200)
 
 # Set layout and margins for 3x3
 # par(mfrow = c(3, 3))
 # par(cex = 0.6, mar = c(2, 2, 2, 1), oma = c(4, 4, 4, 2), tcl = -0.25, mgp = c(2, 0.6, 0))
 
-year <- years_to_plot[3]  # test loop
+year <- years_to_plot[9]  # test loop
 
-for (year in years_to_plot) {
+# for (year in years_to_plot) {
   d2 <- d[d$yr == year, ]
   if (nrow(d) == 0) next
   
@@ -117,7 +117,7 @@ for (year in years_to_plot) {
   
   points(dist, -d2$CTDPRS, pch = 20, cex = 0.5, col = "black")
   polygon(btm$dist, -btm$btm_S, col = "grey")
-}
+# }
 
 # Global labels
 mtext("Distance (km)", side = 1, outer = TRUE, line = 2.5)
@@ -125,7 +125,7 @@ mtext("Pressure (dbar)", side = 2, outer = TRUE, line = 2.5)
 mtext("Dissolved Oxygen Measurements (umol kg-1)", side = 3, outer = TRUE, line = 1.5, cex = 1.2)
 
 # Finish PNG
-dev.off()
+# dev.off()
 
 
 
