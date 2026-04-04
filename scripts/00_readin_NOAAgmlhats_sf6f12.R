@@ -6,8 +6,9 @@ sf6_atm_monthly_means <- read.csv("https://gml.noaa.gov/webdata/ccgg/trends/sf6/
 
 f12_global <- read.csv("https://gml.noaa.gov/aftp/data/hats/cfcs/cfc12/combined/HATS_global_F12.txt",
                          comment.char = "#",header = TRUE,sep = "")
-# plot(f12_mulitple$HATS_F12_YYYY,f12_mulitple$HATS_NH_F12)
-# tail(sf6_atm_monthly_means)
+
+f12_history <- read.csv("https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0164584/CFC_ATM_Hist_2022/Tracer_atmospheric_histories_revised_2023_Table1.csv", header = T)
+f12_history <- f12_history[-c(1:2),]
 
 # history from Rigby, M., Mühle, J., Miller, B. R., Prinn, R. G., Krummel, P. B., Steele, L. P., Fraser, P. J., Salameh, P. K., Harth, C. M., Weiss, R. F., Greally, B. R., O'Doherty, S., Simmonds, P. G., Vollmer, M. K., Reimann, S., Kim, J., Kim, K.-R., Wang, H. J., Olivier, J. G. J., Dlugokencky, E. J., Dutton, G. S., Hall, B. D., and Elkins, J. W.: History of atmospheric SF6 from 1973 to 2008, Atmos. Chem. Phys., 10, 10305–10320, https://doi.org/10.5194/acp-10-10305-2010, 2010.
 sf6_history <- read.table(text = "
@@ -52,4 +53,11 @@ Year Emissions Uncertainty N30_90 N0_30 S0_30 S90_30
 2007 7.14 0.53 6.34 6.22 6.01 5.96
 2008 7.42 0.63 6.65 6.51 6.29 6.24
 ", header = TRUE)
+
+f12 <- f12_global$HATS_NH_F12/100
+plot(sf6_history$Year,sf6_history$N30_90, xlim = c(1969,2030), ylim = c(0,13), type = "l")
+points(sf6_atm_monthly_means$year,sf6_atm_monthly_means$average, type = "l", col = "red")
+points(f12_global$HATS_F12_YYYY,f12,type = "l", col = "blue")
+
+tail(sf6_atm_monthly_means)
 

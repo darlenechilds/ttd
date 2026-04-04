@@ -8,11 +8,34 @@ s <- NULL  # create blank data frame
 
 # Vector of URLs from the OCADS site
 urls <- c(
-  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0240681/18DL20200722.exc.csv",
-  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237232/18DL20190601_hy1.csv",
-  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237146/18HU20180425_hy1.csv",
-  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0186204/18HU20160430.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0113550/18HU19920527.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0113552/18HU19930617.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0113554/18HU19940524.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0115006/a01w_hy1.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0115010/18HU19960512.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0113557/18HU19970509.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0113610/ar07w_j_hy1.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108215/18HU19990627.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108216/18HU20000520.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108217/18HU20010530.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108218/18HU20020623.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108219/18HU20030713.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108220/18HU20040515.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108221/18HU20050526.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108222/18HU20060524.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108223/18HU20070510.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108224/18HU20080520.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108073/18HU20090517.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108225/18HU20100513.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108124/18HU20110506.exc.csv",
+  
+  
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0160487/18HU20150504.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0186204/18HU20160430.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237146/18HU20180425_hy1.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237232/18DL20190601_hy1.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0240681/18DL20200722.exc.csv",
+  
   "https://www.ncei.noaa.gov/data/oceans/archive/arc0237/0302739/1.1/data/0-data/18QL23573_data.csv"
   )
 
