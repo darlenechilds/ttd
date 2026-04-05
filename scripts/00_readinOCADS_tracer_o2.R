@@ -1,10 +1,14 @@
 #read in data from OCADS website, extract data and save it in the data folder
 # qa/qc ocads flags https://www.ncei.noaa.gov/products/ocean-carbon-acidification-data-system
 
+# Step 1: read all OCADS files
+# Step 2: standardize column names
+# Step 3: combine datasets
+
+
 rm(list = ls())
 library(dplyr)
-
-s <- NULL  # create blank data frame 
+library(tidyverse)
 
 # Vector of URLs from the OCADS site
 urls <- c(
@@ -28,53 +32,107 @@ urls <- c(
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108073/18HU20090517.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108225/18HU20100513.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108124/18HU20110506.exc.csv",
-  
-  
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0144337/18MF20120601.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0144303/18HU20130507.exc.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0157623/18HU20140502.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0160487/18HU20150504.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0186204/18HU20160430.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237146/18HU20180425_hy1.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237232/18DL20190601_hy1.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0240681/18DL20200722.exc.csv",
-  
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0228686/33AT20220322_data.csv",
   "https://www.ncei.noaa.gov/data/oceans/archive/arc0237/0302739/1.1/data/0-data/18QL23573_data.csv"
   )
 
+#figure out where the header is.
+lines <- readLines(urls[20], n = 50)
+cat(lines, sep = "\n")
 
-fn <- urls[6]  # file working on - sadly, still manual b/c cant work around cfc header mismatch
+#function to read in ocad data
+read_ocads <- function(url) {
+  tryCatch({
+    
+    # Read all lines first
+    lines <- readLines(url)
+    
+    # Find the real header (starts with EXPOCODE)
+    header_line <- grep("^EXPOCODE", lines)[1]
+    
+    # Read from that line
+    df <- read.csv(text = lines[header_line:length(lines)],
+                   stringsAsFactors = FALSE)
+    
+    df$source <- url
+    
+    return(df)
+    
+  }, error = function(e) {
+    message(paste("Failed:", url))
+    return(NULL)
+  })
+}
 
-# find which line the EXPOCODE starts adn extract data
-lines <- readLines(fn)
-header <- grep("^EXPO", lines, value = TRUE)
-header <- strsplit(header, ",")[[1]]
-skip_no <- grep("^EXPO", lines, value = F)
+d <- lapply(urls, read_ocads)
+d <- d[-1, ]  # remove units row
 
-#read in ocads
-d <- read.csv(fn, skip = 0, header = T)
-units <- d[1,]  #double check units
-d <- d[-1,]
-colnames(d) <- header
-d <- d[which(d$SF6_FLAG_W==2),]  # find sf6 and aux data using SF6_FLAG_W, 2 = good
-plot(d$LONGITUDE,d$LATITUDE)
+#convert all to character to combine into one dataframe
+d <- lapply(d, function(df) {
+  df[] <- lapply(df, as.character)
+  return(df)
+})
 
+#one dataframe with multiple headers ...
+d <- bind_rows(d)
+names(d)
 
-d_extracted <- d %>%
-  select("EXPOCODE", "STNNBR", "DATE",  "LATITUDE", "LONGITUDE",
-                              "SAMPNO","CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
-                             "OXYGEN" ,"OXYGEN_FLAG_W" , "SF6","SF6_FLAG_W",
-         "CFC-12","CFC-12_FLAG_W")
+#clean column names
+grep("CFC", names(d), value = TRUE)
 
-# notes - 2019,2018, 2016 cfc header "CFC-12"
+d <- d %>%
+  mutate(
+    cfc12 = coalesce(CFC.12, CFC12),
+    cfc12_flag = coalesce(CFC.12_FLAG_W,CFC12_FLAG_W),
+    )
 
+#convert back to numeric
+d <- d %>%
+  mutate(across(everything(), ~ as.numeric(.)))
 
-colnames(d_extracted) <- c("EXPOCODE", "STNNBR", "DATE",  "LATITUDE",
-                             "LONGITUDE","SAMPNO","CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,
-                             "OXYGEN" ,"OXYGEN_FLAG_W" , "SF6","SF6_FLAG_W",
-                             "CFC12","CFC12_FLAG_W")
+#get tracer data base with oxygen
 
+d_tracer <- d %>%
+  select("EXPOCODE", "STNNBR", "BTLNBR", "DATE",  "LATITUDE", "LONGITUDE",
+         "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,"OXYGEN" ,"OXYGEN_FLAG_W" , 
+         "SF6","SF6_FLAG_W","cfc12","cfc12_flag")
 
+plot(d_tracer$LONGITUDE,d_tracer$LATITUDE)
 
-s <- rbind(s,d_extracted)
+#get ar7w line
 
+# get ar7w line
+# ar7w line 
+la <- c(56.1147, 56.5450, 56.9568, 57.3775, 57.8003, 58.2158, 59.4832, 59.7440,
+        59.9808, 59.0685, 58.7815)
+lo <- c(-53.1142, -52.6807, -52.2390, -51.7847,-51.3437, -50.8832, -49.4660,
+        -49.1693, -48.8963, -49.9507, -50.4468)
 
-write.csv(s,"C:/Users/childsd/repospace/ttd/data/ocads2015_2020.csv",row.names = F)
+ar7w <- data.frame(
+  lat = la,
+  lon = lo
+)
+
+tol <- 0.2   # ~20 km-ish (roughly, good starting point)
+
+ar7w_data <- bind_rows(lapply(1:nrow(ar7w), function(i) {
+  
+  d_tracer %>%
+    filter(
+      abs(LATITUDE - ar7w$lat[i]) < tol,
+      abs(LONGITUDE - ar7w$lon[i]) < tol
+    )
+}))
+
+plot(ar7w_data$LONGITUDE,ar7w_data$LATITUDE)
+
+write.csv(ar7w_data,"data/OCADS_tracers_o2.csv")
 
