@@ -1,11 +1,6 @@
 #read in data from OCADS website, extract data and save it in the data folder
 # qa/qc ocads flags https://www.ncei.noaa.gov/products/ocean-carbon-acidification-data-system
 
-# Step 1: read all OCADS files
-# Step 2: standardize column names
-# Step 3: combine datasets
-
-
 rm(list = ls())
 library(dplyr)
 library(tidyverse)
@@ -73,7 +68,7 @@ read_ocads <- function(url) {
 }
 
 d <- lapply(urls, read_ocads)
-d <- d[-1, ]  # remove units row
+d <- d[!sapply(d, is.null)]
 
 #convert all to character to combine into one dataframe
 d <- lapply(d, function(df) {
@@ -83,10 +78,11 @@ d <- lapply(d, function(df) {
 
 #one dataframe with multiple headers ...
 d <- bind_rows(d)
-names(d)
+d <- d[-1, ]  # remove units row
+# names(d)
 
 #clean column names
-grep("CFC", names(d), value = TRUE)
+# grep("CFC", names(d), value = TRUE)
 
 d <- d %>%
   mutate(
@@ -94,16 +90,28 @@ d <- d %>%
     cfc12_flag = coalesce(CFC.12_FLAG_W,CFC12_FLAG_W),
     )
 
-#convert back to numeric
-d <- d %>%
-  mutate(across(everything(), ~ as.numeric(.)))
-
-#get tracer data base with oxygen
-
 d_tracer <- d %>%
   select("EXPOCODE", "STNNBR", "BTLNBR", "DATE",  "LATITUDE", "LONGITUDE",
          "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,"OXYGEN" ,"OXYGEN_FLAG_W" , 
          "SF6","SF6_FLAG_W","cfc12","cfc12_flag")
+
+
+#convert back to numeric
+d_tracer <- d_tracer %>%
+  mutate(across(
+    c(LATITUDE, LONGITUDE,
+      CTDPRS, CTDTMP, CTDSAL, SALNTY,
+      OXYGEN,
+      SF6, cfc12),
+    ~ {
+      x <- na_if(., "-999")
+      x <- na_if(x, "-999.0")
+      x <- na_if(x, "-999.000")
+      as.numeric(x)
+    }
+  ))
+  
+  
 
 plot(d_tracer$LONGITUDE,d_tracer$LATITUDE)
 
