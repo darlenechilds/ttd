@@ -22,7 +22,10 @@ urls <- c(
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108220/18HU20040515.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108221/18HU20050526.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108222/18HU20060524.exc.csv",
+  # "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108223/18HU20070510.exc.csv",
+  
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108223/18HU20070510.exc.csv",
+  
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108224/18HU20080520.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108073/18HU20090517.exc.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0108225/18HU20100513.exc.csv",
@@ -35,22 +38,34 @@ urls <- c(
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237146/18HU20180425_hy1.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0237232/18DL20190601_hy1.csv",
   "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0240681/18DL20200722.exc.csv",
-  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0228686/33AT20220322_data.csv",
-  "https://www.ncei.noaa.gov/data/oceans/archive/arc0237/0302739/1.1/data/0-data/18QL23573_data.csv"
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0287917/33AT22805_data_v2.csv",
+  "https://cchdo.ucsd.edu/data/42922/18QL23573_data.csv",  # no sf6 yet
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0313460/18QL20240527_data.csv",
+  "https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0313459/35A320250427_data.csv"
+  
   )
 
+
+# #check individual files
+# checkfile <- read.csv(urls[31])
+
+ d_check <- read_ocads(urls[20])
+# lines <- readLines(urls[11])
+# header_line <- grep("^EXPOCODE", lines)[1]
+
+
 #figure out where the header is.
-lines <- readLines(urls[20], n = 50)
-cat(lines, sep = "\n")
+# lines <- readLines(urls[20], n = 50)
+# cat(lines, sep = "\n")
 
 #function to read in ocad data
 read_ocads <- function(url) {
   tryCatch({
     
-    # Read all lines first
+    # Read lines first
     lines <- readLines(url)
     
-    # Find the real header (starts with EXPOCODE)
+    # Find the header - EXPOCODE
     header_line <- grep("^EXPOCODE", lines)[1]
     
     # Read from that line
@@ -67,8 +82,15 @@ read_ocads <- function(url) {
   })
 }
 
-d <- lapply(urls, read_ocads)
-d <- d[!sapply(d, is.null)]
+
+
+# d <- lapply(urls, read_ocads)
+# d <- d[!sapply(d, is.null)]
+
+save(d, file = './d.rda')
+ocads_d <- './d.rda'
+load(ocads_d)
+
 
 #convert all to character to combine into one dataframe
 d <- lapply(d, function(df) {
@@ -79,39 +101,56 @@ d <- lapply(d, function(df) {
 #one dataframe with multiple headers ...
 d <- bind_rows(d)
 d <- d[-1, ]  # remove units row
-# names(d)
+
+d$year <- substr(d$DATE,1,4)
+unique(d$year)
 
 #clean column names
-# grep("CFC", names(d), value = TRUE)
+grep("CFC", names(d), value = TRUE)
+grep("BTL", names(d), value = TRUE)
 
 d <- d %>%
   mutate(
     cfc12 = coalesce(CFC.12, CFC12),
     cfc12_flag = coalesce(CFC.12_FLAG_W,CFC12_FLAG_W),
+    LATITUDE = coalesce(BTL_LAT,LATITUDE),
+    LONGITUDE = coalesce(BTL_LON,LONGITUDE),
     )
 
+names(d)
+
+#further cleaning
+ind <- which(d$EXPOCODE == "END_DATA")
+d <- d[-ind, ]
+
 d_tracer <- d %>%
-  select("EXPOCODE", "STNNBR", "BTLNBR", "DATE",  "LATITUDE", "LONGITUDE",
+  select("EXPOCODE", "STNNBR", "BTLNBR", "SAMPNO","DATE",  "LATITUDE", "LONGITUDE",
          "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,"OXYGEN" ,"OXYGEN_FLAG_W" , 
-         "SF6","SF6_FLAG_W","cfc12","cfc12_flag")
+         "SF6","SF6_FLAG_W","cfc12","cfc12_flag","year")
 
 
 #convert back to numeric
+library(dplyr)
+df <- df %>% 
+  mutate(across(c(col1, col2), as.numeric))
+
+
 d_tracer <- d_tracer %>%
   mutate(across(
     c(LATITUDE, LONGITUDE,
       CTDPRS, CTDTMP, CTDSAL, SALNTY,
       OXYGEN,
       SF6, cfc12),
-    ~ {
-      x <- na_if(., "-999")
-      x <- na_if(x, "-999.0")
-      x <- na_if(x, "-999.000")
-      as.numeric(x)
-    }
+    # ~ {
+    #   x <- na_if(., "-999")
+    #   x <- na_if(x, "-999.0")
+    #   x <- na_if(x, "-999.000")
+    as.numeric
+    # }
   ))
-  
-  
+
+#make sure we didnt loose anything. 
+unique(d_tracer$year)
 
 plot(d_tracer$LONGITUDE,d_tracer$LATITUDE)
 
@@ -142,5 +181,7 @@ ar7w_data <- bind_rows(lapply(1:nrow(ar7w), function(i) {
 
 plot(ar7w_data$LONGITUDE,ar7w_data$LATITUDE)
 
-write.csv(ar7w_data,"data/OCADS_tracers_o2.csv")
+unique(ar7w_data$year)
+
+write.csv(ar7w_data,"data/OCADS_tracers_o2_ar7w.csv")
 
