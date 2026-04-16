@@ -48,8 +48,9 @@ urls <- c(
 
 # #check individual files
 # checkfile <- read.csv(urls[31])
-
- d_check <- read_ocads(urls[20])
+i <- 27
+urls[i]
+d_check <- read_ocads(urls[i])
 # lines <- readLines(urls[11])
 # header_line <- grep("^EXPOCODE", lines)[1]
 
