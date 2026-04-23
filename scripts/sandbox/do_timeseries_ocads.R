@@ -1,10 +1,16 @@
-#timeseries plot for do for different water masses using ocads data
+# darlene.childs@dfo-mpo.gc.ca
+# April 2026
+# Timeseries plot for do for different water masses using ocads data
 
 rm(list = ls())
 library(oce)
+library(dplyr)
 
 #compiled from 00_readinOCADS_tracer_o2 script
 d <- read.csv("data/processed/OCADS_tracers_o2_ar7w.csv", stringsAsFactors = F)
+# d <- read.csv("data/processed/UNSUB_tracers_o2.csv")  
+
+
 head(d)
 
 #get do dataframe
@@ -23,7 +29,7 @@ d <- d[!is.na(d$OXYGEN), ]
 
 plot(d$OXYGEN,-d$CTDPRS)
 
-# 2022 do data in ml/l
+# 2022 do data in ml/l, only one decimal place reported
 # get 2022 data
 d1 <- d[d$year==2022,]
 #convert DO ml/l to umol/kg (1 kg/m^3 = 0.001 kg/L) 
@@ -54,24 +60,27 @@ plot(d$OXYGEN,-d$CTDPRS)
 
 
 # lookign at years... 
-d1 <- d[d$year==2018,]
+d1 <- d[d$year==2020,]
 d2 <- d[d$year==2024,]
-d3 <- d[d$year==2022,]
+d3 <- d[d$year==2023,]
 
-plot(d1$SF6,-d1$CTDPRS)
-points(d2$SF6,-d2$CTDPRS, col = "blue")
-points(d3$SF6,-d3$CTDPRS, col = "red")
+plot(d1$OXYGEN,-d1$CTDPRS)
+points(d2$OXYGEN,-d2$CTDPRS, col = "blue")
+points(d3$OXYGEN,-d3$CTDPRS, col = "red")
 
 deep <- d1[d1$CTDPRS>1900,]
 
 unique(d$year)
+
+#calculate %sat and AOU
+
 
 #find NEADW
 d$theta <- swTheta(d$CTDSAL,d$CTDTMP,d$CTDPRS,referencePressure = 0)
 d$sigma2 <- swSigma2(d$CTDSAL,d$CTDTMP,d$CTDPRS)
 
 neadw <- d[which(d$LATITUDE > 56 & d$LONGITUDE <60),]
-neadw <- neadw[which(neadw$sigma2 > 36.965 & neadw$sigma2 < 37.04),]
+neadw <- neadw[which(neadw$sigma2 > 36.965 & neadw$sigma2 < 37.015),]
 
 neadw_ave_ocads <- mean(neadw$OXYGEN)
 neadw_sd_ocads <- sd(neadw$OXYGEN)
@@ -97,14 +106,16 @@ for (yr in uyear){
 }
 s_ne <- s_ne[order(s_ne$year), ]
 
-half_sd <- s_ne$sd/2
-ulim <- s_ne$mean+half_sd
-llim <- s_ne$mean-half_sd
-
-plot(s_ne$year,s_ne$mean, type = "both", pch = 19, ylim = c(260,300), xlim = c(1990, 2026), 
-     main = "NEADW timeseries", ylab = "[DO] (umol kg-1)", xlab = "year")
-arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05)
-
+# half_sd <- s_ne$sd/2
+# ulim <- s_ne$mean+half_sd
+# llim <- s_ne$mean-half_sd
+# 
+# plot(s_ne$year,s_ne$mean, type = "both", pch = 19, ylim = c(260,300), xlim = c(1990, 2026), 
+#      main = "NEADW timeseries", ylab = "[DO] (umol kg-1)", xlab = "year")
+# arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05)
+# lines(c(1992, 2025), c(neadw_ave_ocads, neadw_ave_ocads), col = "red", lwd = 1,lty = 2)
+# 
+# legend("topright", legend = "Climatology", col = "red", lwd = 2, bty = "n")
 
 #find NvLSW
 
@@ -123,7 +134,7 @@ for (yr in uyear){
   
   mean <- mean(e$OXYGEN, na.rm = TRUE)
   sd  <- sd(e$OXYGEN, na.rm = TRUE)
-  anomaly  <- mean - neadw_ave_ocads
+  anomaly  <- mean - nvlsw_ave_ocads
   n <- length(e$EXPOCODE)
   e_df <- data.frame(year = yr,
                      mean = mean,
@@ -135,7 +146,7 @@ for (yr in uyear){
 }
 s_nv <- s_nv[order(s_nv$year), ]
 
-
+###  plot on one panel 
 half_sd <- s_nv$sd/2
 ulim <- s_nv$mean+half_sd
 llim <- s_nv$mean-half_sd
@@ -143,16 +154,59 @@ llim <- s_nv$mean-half_sd
 plot(s_nv$year,s_nv$mean, type = "both", pch = 19, ylim = c(260,320), xlim = c(1990, 2026), 
      main = "Dissolved Oxygen Timeseries", ylab = "[DO] (umol kg-1)", xlab = "year")
 arrows(s_nv$year,llim, s_nv$year,ulim, angle = 90, code = 3, length = 0.05)
+lines(c(1992, 2025), c(nvlsw_ave_ocads, nvlsw_ave_ocads), col = "red", lwd = 1,lty = 2)
 
 points(s_ne$year,s_ne$mean, type = "both", pch = 19,col = "blue")
 half_sd <- s_ne$sd/2
 ulim <- s_ne$mean+half_sd
 llim <- s_ne$mean-half_sd
 arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05, col = "blue")
+lines(c(1992, 2025), c(neadw_ave_ocads, neadw_ave_ocads), col = "red", lwd = 1,lty = 2)
 
 legend("topright",
-       legend = c("NvLSW", "NEADW"),
+       legend = c("NvLSW", "NEADW", "Climatology"),
        pch = c(19),
-       col = c("black", "blue"),
+       col = c("black", "blue", "red"),
        bty = "n")
 
+#find intermediate depths - 1000-2000 meters for the centre 
+# 
+# intlsw <- d[d$LATITUDE > 56 & d$LONGITUDE <60,]
+# intlsw <- intlsw[intlsw$CTDPRS < 2000 & intlsw$CTDPRS > 1000,]
+# 
+# intlsw_ave_ocads <- mean(intlsw$OXYGEN)
+# intlsw_sd_ocads <- sd(intlsw$OXYGEN)
+# 
+# uyear <- unique(d$year)
+# s_in = NULL
+# 
+# for (yr in uyear){
+#   
+#   e <- intlsw[intlsw$year == yr, ]
+#   
+#   mean <- mean(e$OXYGEN, na.rm = TRUE)
+#   sd  <- sd(e$OXYGEN, na.rm = TRUE)
+#   anomaly  <- mean - intlsw_ave_ocads
+#   n <- length(e$EXPOCODE)
+#   e_df <- data.frame(year = yr,
+#                      mean = mean,
+#                      sd = sd,
+#                      anomaly = anomaly,
+#                      n = n)
+#   
+#   s_in <- rbind(s_in, e_df)
+# }
+# s_in <- s_in[order(s_in$year), ]
+# 
+# half_sd <- s_in$sd/2
+# ulim <- s_in$mean+half_sd
+# llim <- s_in$mean-half_sd
+# 
+# plot(s_in$year,s_in$mean, type = "both", pch = 19, ylim = c(260,320), xlim = c(1990, 2026), 
+#      main = "LSWint timeseries", ylab = "[DO] (umol kg-1)", xlab = "year")
+# arrows(s_in$year,llim, s_in$year,ulim, angle = 90, code = 3, length = 0.05)
+# lines(c(1992, 2025), c(intlsw_ave_ocads, intlsw_ave_ocads), col = "red", lwd = 1,lty = 2)
+# 
+# legend("topright", legend = "Climatology", col = "red", lwd = 2, bty = "n")
+# 
+# 

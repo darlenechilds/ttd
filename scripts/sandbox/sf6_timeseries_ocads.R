@@ -36,16 +36,16 @@ colnames(f_extracted) <- c("EXPOCODE", "STNNBR", "BTLNBR","SAMPNO", "DATE",  "LA
 #rbind dataframes
 d <- rbind.data.frame(d,f_extracted)
 
-# lookign at years... 
-d1 <- d[d$year==2018,]
-d2 <- d[d$year==2024,]
-d3 <- d[d$year==2022,]
- 
-plot(d1$SF6,-d1$CTDPRS)
-points(d2$SF6,-d2$CTDPRS, col = "blue")
-points(d3$SF6,-d3$CTDPRS, col = "red")
-
-deep <- d1[d1$CTDPRS>1900,]
+# # lookign at years... 
+# d1 <- d[d$year==2018,]
+# d2 <- d[d$year==2024,]
+# d3 <- d[d$year==2022,]
+#  
+# plot(d1$SF6,-d1$CTDPRS)
+# points(d2$SF6,-d2$CTDPRS, col = "blue")
+# points(d3$SF6,-d3$CTDPRS, col = "red")
+# 
+# deep <- d1[d1$CTDPRS>1900,]
 
 #flags in 2018
 #stn. 129 of 2018 are too low
@@ -90,18 +90,18 @@ for (yr in uyear){
 }
 s_ne <- s_ne[order(s_ne$year), ]
 
-half_sd <- s_ne$sd/2
-ulim <- s_ne$mean+half_sd
-llim <- s_ne$mean-half_sd
-
-plot(s_ne$year,s_ne$mean, type = "both", pch = 19, ylim = c(0.5,1.8), xlim = c(2010, 2026), 
-     main = "NEADW timeseries", ylab = "[sf6] (fmol kg-1)", xlab = "year")
-arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05)
-points(s_ne$year,s_ne$anomaly, pch = 19, col = "blue") 
+# half_sd <- s_ne$sd/2
+# ulim <- s_ne$mean+half_sd
+# llim <- s_ne$mean-half_sd
+# 
+# plot(s_ne$year,s_ne$mean, type = "both", pch = 19, ylim = c(0.5,1.8), xlim = c(2010, 2026), 
+#      main = "NEADW timeseries", ylab = "[sf6] (fmol kg-1)", xlab = "year")
+# arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05)
+# points(s_ne$year,s_ne$anomaly, pch = 19, col = "blue") 
 
 #find NvLSW
 
-nvlsw <- d[d$LATITUDE > 56 & d$LONGITUDE <60,]
+nvlsw <- d[d$LATITUDE > 56 & d$LONGITUDE <59.1,]
 nvlsw <- nvlsw[nvlsw$CTDPRS > 150 & nvlsw$CTDPRS < 500,]
 
 nvlsw_avesf6_ocads <- mean(nvlsw$SF6)
@@ -133,9 +133,26 @@ half_sd <- s_nv$sd/2
 ulim <- s_nv$mean+half_sd
 llim <- s_nv$mean-half_sd
 
-plot(s_nv$year,s_nv$mean, type = "both", pch = 19, ylim = c(1.8,4), xlim = c(2010, 2026), 
-     main = "NvLSW timeseries", ylab = "[sf6] (fmol kg-1)", xlab = "year")
+plot(s_nv$year,s_nv$mean, type = "both", pch = 19, ylim = c(0.5,5), xlim = c(2010, 2026), 
+     main = "SF6 OCADS Timeseries", ylab = "[sf6] (fmol kg-1)", xlab = "year")
 arrows(s_nv$year,llim, s_nv$year,ulim, angle = 90, code = 3, length = 0.05)
+lines(c(2012, 2025), c(nvlsw_avesf6_ocads, nvlsw_avesf6_ocads), col = "red", lwd = 1,lty = 2)
+
+
+points(s_ne$year,s_ne$mean, type = "both", pch = 19,col = "blue")
+half_sd <- s_ne$sd/2
+ulim <- s_ne$mean+half_sd
+llim <- s_ne$mean-half_sd
+arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05, col = "blue")
+lines(c(2012, 2025), c(neadw_avesf6_ocads, neadw_avesf6_ocads), col = "red", lwd = 1,lty = 2)
+
+legend("topright",
+       legend = c("NvLSW - 150<depth<500m, 56<Lat<59.1", 
+                  "NEADW - 36.965< σ2<37.04, 56<Lat<60", 
+                  "Climatology - mean 2012:2025"),
+       pch = c(19),
+       col = c("black", "blue", "red"),
+       bty = "n")
 
 
 

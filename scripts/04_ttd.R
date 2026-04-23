@@ -8,7 +8,7 @@ ttd <- function(t, Gamma, Delta) {
     exp(-Gamma* (t-Gamma)^2 / (4 * Delta^2 * t))
 }
 
-# Your convolution function from earlier:
+# convolution function
 compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
   tau <- seq(0.1, 200, by = 0.5)  # time, i.e. 1-200 years
   G_tau <- ttd(tau, Gamma, Delta) # ttd based on gamma (years), delta (width, years), arb...

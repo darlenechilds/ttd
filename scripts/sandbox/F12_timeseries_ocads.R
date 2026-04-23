@@ -2,32 +2,37 @@
 
 rm(list = ls())
 library(oce)
-
+library(dplyr)
 #compiled from 00_readinOCADS_tracer_o2 script
 d <- read.csv("data/processed/OCADS_tracers_o2_ar7w.csv", stringsAsFactors = F)
+# d <- read.csv(file.choose())                              
+
 head(d)
 #get F12 dataframe
 d <- d%>%
   select("EXPOCODE", "STNNBR", "BTLNBR","SAMPNO", "DATE",  "LATITUDE", "LONGITUDE",
          "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,"cfc12","cfc12_flag","year")
 unique(d$year)
+
 #filter/keep good data usign ocads quality control flags, 2 = good, 6 = median of replicates
-# d <- d[d$cfc12_flag==2 | d$cfc12_flag==6 | d$cfc12_flag==0,]  #includes 2023 
-d <- d[d$cfc12_flag==2 | d$cfc12_flag==6 ,]  #excluded 2023  CFC12 data not reliable
+d <- d[d$cfc12_flag==2 | d$cfc12_flag==6 | d$cfc12_flag==0,]  
+# d <- d[d$cfc12_flag==2 | d$cfc12_flag==6 ,]  #excluded 2023  CFC12 data not reliable
+d <- d[rowSums(is.na(d)) != ncol(d), ]
+
 
 # lookign at years... 
-d1 <- d[d$year==2023,]
-unique(d1$cfc12_flag)
-d2 <- d[d$year==2024,]
-d3 <- d[d$year==2022,]
-
-plot(d1$cfc12,-d1$CTDPRS)
-points(d2$cfc12,-d2$CTDPRS, col = "blue")
-points(d3$cfc12,-d3$CTDPRS, col = "red")
+# d1 <- d[d$year==2025,]
+# unique(d1$cfc12_flag)
+# d2 <- d[d$year==2024,]
+# d3 <- d[d$year==2022,]
+# 
+# plot(d1$cfc12,-d1$CTDPRS)
+# points(d2$cfc12,-d2$CTDPRS, col = "blue")
+# points(d3$cfc12,-d3$CTDPRS, col = "red")
 
 #check
-plot(d$LONGITUDE,d$LATITUDE)
-plot(d$cfc12,-d$CTDPRS)
+# plot(d$LONGITUDE,d$LATITUDE)
+# plot(d$cfc12,-d$CTDPRS)
 
 #remove f12 = 0
 d <- d[d$cfc12 != 0, ]
@@ -66,18 +71,18 @@ for (yr in uyear){
 
 s_ne <- s_ne[order(s_ne$year), ]
 
-half_sd <- s_ne$sd/2
-ulim <- s_ne$mean+half_sd
-llim <- s_ne$mean-half_sd
-
-plot(s_ne$year,s_ne$mean, type = "both", pch = 19, ylim = c(0.5,3), xlim = c(1990, 2026), 
-     main = "NEADW timeseries", ylab = "[f12] (pmol kg-1)", xlab = "year")
-arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05)
+# half_sd <- s_ne$sd/2
+# ulim <- s_ne$mean+half_sd
+# llim <- s_ne$mean-half_sd
+# 
+# plot(s_ne$year,s_ne$mean, type = "both", pch = 19, ylim = c(0.5,3), xlim = c(1990, 2026), 
+#      main = "NEADW timeseries", ylab = "[f12] (pmol kg-1)", xlab = "year")
+# arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05)
 
 
 #find NvLSW
 
-nvlsw <- d[d$LATITUDE > 56 & d$LONGITUDE <60,]
+nvlsw <- d[d$LATITUDE > 56 & d$LONGITUDE <59.1,]
 nvlsw <- nvlsw[nvlsw$CTDPRS > 150 & nvlsw$CTDPRS < 500,]
 
 nvlsw_avef12_ocads <- mean(nvlsw$cfc12)
@@ -103,10 +108,30 @@ for (yr in uyear){
   s_nv <- rbind(s_nv, e_df)
 }
 s_nv <- s_nv[order(s_nv$year), ]
+
 half_sd <- s_nv$sd/2
 ulim <- s_nv$mean+half_sd
 llim <- s_nv$mean-half_sd
 
 plot(s_nv$year,s_nv$mean, type = "both", pch = 19, ylim = c(0.5,4), xlim = c(1990, 2026), 
-     main = "NvLSW timeseries", ylab = "[f12] (pmol kg-1)", xlab = "year")
+     main = "CFC12 OCADS Timeseries", ylab = "[cfc12] (pmol kg-1)", xlab = "year")
 arrows(s_nv$year,llim, s_nv$year,ulim, angle = 90, code = 3, length = 0.05)
+lines(c(1992, 2025), c(nvlsw_avef12_ocads, nvlsw_avef12_ocads), col = "red", lwd = 1,lty = 2)
+
+
+points(s_ne$year,s_ne$mean, type = "both", pch = 19,col = "blue")
+half_sd <- s_ne$sd/2
+ulim <- s_ne$mean+half_sd
+llim <- s_ne$mean-half_sd
+arrows(s_ne$year,llim, s_ne$year,ulim, angle = 90, code = 3, length = 0.05, col = "blue")
+lines(c(1992, 2025), c(neadw_avef12_ocads, neadw_avef12_ocads), col = "red", lwd = 1,lty = 2)
+
+legend("topright",
+       legend = c("NvLSW - 150<depth<500m, 56<Lat<59.1", 
+                  "NEADW - 36.965< σ2<37.04, 56<Lat<60", 
+                  "Climatology - mean 1992:2025"),
+       pch = c(19),
+       col = c("black", "blue", "red"),
+       bty = "n")
+
+
