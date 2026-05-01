@@ -6,11 +6,13 @@ sf6_atm_monthly_means <- read.csv("https://gml.noaa.gov/webdata/ccgg/trends/sf6/
 
 f12_global <- read.csv("https://gml.noaa.gov/aftp/data/hats/cfcs/cfc12/combined/HATS_global_F12.txt",
                          comment.char = "#",header = TRUE,sep = "")
-
+#
 f12_history <- read.csv("https://www.ncei.noaa.gov/data/oceans/ncei/ocads/data/0164584/CFC_ATM_Hist_2022/Tracer_atmospheric_histories_revised_2023_Table1.csv", header = T)
 f12_history <- f12_history[-c(1:2),]
 
-# history from Rigby, M., Mühle, J., Miller, B. R., Prinn, R. G., Krummel, P. B., Steele, L. P., Fraser, P. J., Salameh, P. K., Harth, C. M., Weiss, R. F., Greally, B. R., O'Doherty, S., Simmonds, P. G., Vollmer, M. K., Reimann, S., Kim, J., Kim, K.-R., Wang, H. J., Olivier, J. G. J., Dlugokencky, E. J., Dutton, G. S., Hall, B. D., and Elkins, J. W.: History of atmospheric SF6 from 1973 to 2008, Atmos. Chem. Phys., 10, 10305–10320, https://doi.org/10.5194/acp-10-10305-2010, 2010.
+# SF6 history from Rigby, M., Mühle, J., Miller, B. R., Prinn, R. G., Krummel, P. B., Steele, L. P., Fraser, P. J., Salameh, P. K., Harth, C. M., Weiss, R. F., Greally, B. R., O'Doherty, S., Simmonds, P. G., Vollmer, M. K., Reimann, S., Kim, J., Kim, K.-R., Wang, H. J., Olivier, J. G. J., 
+#Dlugokencky, E. J., Dutton, G. S., Hall, B. D., and Elkins, J. W.:
+#History of atmospheric SF6 from 1973 to 2008, Atmos. Chem. Phys., 10, 10305–10320, https://doi.org/10.5194/acp-10-10305-2010, 2010.
 sf6_history <- read.table(text = "
 Year Emissions Uncertainty N30_90 N0_30 S0_30 S90_30
 1970 0.73 0.08 0.29 0.28 0.27 0.27
@@ -54,10 +56,34 @@ Year Emissions Uncertainty N30_90 N0_30 S0_30 S90_30
 2008 7.42 0.63 6.65 6.51 6.29 6.24
 ", header = TRUE)
 
-f12 <- f12_global$HATS_NH_F12/100
+
 plot(sf6_history$Year,sf6_history$N30_90, xlim = c(1969,2030), ylim = c(0,13), type = "l")
 points(sf6_atm_monthly_means$year,sf6_atm_monthly_means$average, type = "l", col = "red")
-points(f12_global$HATS_F12_YYYY,f12,type = "l", col = "blue")
+points(f12_history$YEAR,f12_history$SF6, type = "l", col = "purple")
 
-tail(sf6_atm_monthly_means)
+points(f12_global$HATS_F12_YYYY,(f12_global$HATS_NH_F12/100),type = "l", col = "blue")
+points(f12_history$YEAR,(as.numeric(f12_history$CFC12)/100),type = "l", col = "green")
 
+# create a matrix for both sf6 and f12 merging atmospheric data
+# sf6
+sf6 <- f12_history[, c("YEAR", "SF6")]
+sf6$SF6 <- as.numeric(sf6$SF6)
+sf6 <- sf6[sf6$SF6>0,]
+sf6 <- sf6[sf6$YEAR<1998,]
+sf62 <- sf6_atm_monthly_means[,c("decimal","average")]
+colnames(sf62) <- c("YEAR","SF6")
+sf6 <- rbind.data.frame(sf6,sf62)
+plot(sf6$YEAR,sf6$SF6,xlim = c(1950,2030), type = "l")
+write.csv(sf6,"data/processed/sf6_atm.csv")
+
+#f12
+f12 <- f12_history[,c("YEAR","CFC12")]
+f12$CFC12 <- as.numeric(f12$CFC12)
+f12 <- f12[f12$CFC12>0,]
+f12 <- f12[f12$YEAR<1978,]
+f12_global$d_year <- f12_global$HATS_F12_YYYY+(f12_global$HATS_F12_MM/12)
+f12_2 <- f12_global[,c("d_year","HATS_NH_F12")]
+colnames(f12_2) <- c("YEAR","CFC12")
+f12 <- rbind.data.frame(f12,f12_2)
+plot(f12$YEAR,f12$CFC12,type = "l")
+write.csv(f12,"data/processed/f12_atm.csv")

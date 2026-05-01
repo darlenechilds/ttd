@@ -61,9 +61,9 @@ unique(d$year)
 
 #find NEADW
 d$theta <- swTheta(d$CTDSAL,d$CTDTMP,d$CTDPRS,referencePressure = 0)
-d$sigma2 <- swSigma2(d$CTDSAL,d$CTDTMP,d$CTDPRS)
+d$sigma2 <- swSigma2(d$CTDSAL,d$theta,d$CTDPRS)
 
-neadw <- d[which(d$LATITUDE > 56 & d$LONGITUDE <60),]
+neadw <- d[which(d$LATITUDE > 56 & d$LATITUDE <60),]
 neadw <- neadw[which(neadw$sigma2 > 36.965 & neadw$sigma2 < 37.04),]
 
 neadw_avesf6_ocads <- mean(neadw$SF6)
@@ -101,7 +101,7 @@ s_ne <- s_ne[order(s_ne$year), ]
 
 #find NvLSW
 
-nvlsw <- d[d$LATITUDE > 56 & d$LONGITUDE <59.1,]
+nvlsw <- d[d$LATITUDE > 56 & d$LATITUDE <59.1,]
 nvlsw <- nvlsw[nvlsw$CTDPRS > 150 & nvlsw$CTDPRS < 500,]
 
 nvlsw_avesf6_ocads <- mean(nvlsw$SF6)

@@ -24,9 +24,10 @@ compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
 sf6_atm <- read.csv("E:/A_docs/2025/2025_labSea/reports/ventialation_labSea_2015_2025/ttd_learning/atmos_data_sf6_comb_wTS_wSat.csv")
 
 sf6_atm_eff <- (sf6_atm$SF6NH*sf6_atm$sat)/100
-sf6_interp <- approxfun(sf6_atm$Year, sf6_atm_eff, rule=2)
+sf6_interp <- approxfun(sf6_atm$Year, sf6_atm_eff, rule=2)  #2 = allowing extrapolation 
 
-## cal Co using Xeff and solubility constants from Bullister et. al., 2002
+
+## compute Co using Xeff and solubility constants from Bullister et. al., 2002
 
 ## Dynamically 
 # Solubiity funcion; Bulister et al., 2002, gravimetric - mol per kg per atm
