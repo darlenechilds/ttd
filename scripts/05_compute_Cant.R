@@ -10,29 +10,39 @@ ttd <- function(t, Gamma, Delta) {
   G[t <= 0] <- 0
   return(G)
 }
-
-# convolution function
 compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
-  tau <- seq(0.1, 80, by = 0.5)                     # time, i.e. 1-200 years
-  G_tau <- ttd(tau, Gamma, Delta)                   # ttd based on gamma (years), delta (width, years)
-  G_tau <- G_tau / sum(G_tau * diff(c(0, tau)))     # normalize
-  C0_vals <- C0_fun(t_today - tau)                  # Evaluate surface history at (t_today - tau)
-  integrand <- C0_vals * G_tau                      # Numerical integration (trapezoid rule)
-  C_xt <- sum(integrand * diff(c(0, tau)))
+  
+  tau  <- seq(0.1, 80, by = 0.5)
+  dtau <- 0.5
+  
+  # Transit time distribution
+  G_tau <- ttd(tau, Gamma, Delta)
+  
+  # Normalize so integral = 1
+  G_tau <- G_tau / sum(G_tau * dtau)
+  
+  # Surface boundary condition evaluated backward in time
+  C0_vals <- C0_fun(t_today - tau)
+  C0_vals[is.na(C0_vals)] <- 0
+  
+  # Convolution
+  C_xt <- sum(C0_vals * G_tau * dtau)
+  
   return(C_xt)
 }
 
+
+
 # input found gamma
-yr <- 2006
+yr <- 1992
 fn <- paste("data/processed/gamma_best_",yr,".csv", sep = "")
 d <- read.csv(fn, stringsAsFactors = F)
 
 
 # co2_C_star - input to the system
 cO <- read.csv("data/processed/surf_pco2_history.csv")
-# approx function, rule=2 allows extrapolation
-cO_fun <- approxfun(cO$yr, cO$pco2_c_star, rule = 2) 
-
+cO_fun <- approxfun(cO$yr, cO$Cant_surf, rule = 1) 
+cO_fun(1992)
 # cO_ppt - input to the system
 # cO_fun <- approxfun(cO$yr, cO$y, rule = 2) 
 
@@ -51,19 +61,22 @@ d$Cant <- sapply(1:length(Gamma), function(i) {
     C0_fun = cO_fun
   )
 })
+#find lsw mean Cant
+lsw_sigma <- data.frame(
+  year = c(1986, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
+           2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,
+           2011, 2012, 2013, 2014, 2015, 2016),
+  sigma2 = c(36.910, 36.943, 36.952, 36.953, 36.942, 36.931, 36.913, 36.893,
+             36.870, 36.875, 36.887, 36.885, 36.887, 36.881, 36.868, 36.864,
+             36.842, 36.874, 36.860, 36.817, 36.823, 36.852, 36.850, 36.860,
+             36.879, 36.896))
 
-# single computation
+sigma_cut <- lsw_sigma$sigma2[lsw_sigma$year == yr]
 
-yr <- 1996
-Gamma <- 2
-ratio <- 1.8
-Delta <- ratio * Gamma
-
-
-compute_Cxt(
-    t = yr,
-    Gamma = Gamma,
-    Delta = Delta,
-    C0_fun = cO_fun
-  )
-
+# LSW
+lsw <- d[d$year == yr &
+           d$LATITUDE > 56 & d$LATITUDE < 59.1 &
+           d$CTDPRS > 200 &
+           d$sigma2 < sigma_cut, ]
+head(lsw)
+mean(lsw$Cant)

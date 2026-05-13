@@ -2,6 +2,7 @@ rm(list = ls())
 # Define TTD, compute_Cxt, 
 # Input has been constructed using Xeff equation (ppt), ppt has been converted to fmol kg-1 using T,S and solubility constants
 library(oce)
+
 #lsw sigma2 limit from raimondi et al., 2021, table S3
 lsw_sigma <- data.frame(
   year = c(1986, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
@@ -21,24 +22,28 @@ ttd <- function(t, Gamma, Delta) {
   return(G)
 }
 
-# convolution function
 compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
-  tau <- seq(0.1, 80, by = 0.5)                     # time, i.e. 1-200 years
-  G_tau <- ttd(tau, Gamma, Delta)                   # ttd based on gamma (years), delta (width, years)
-  G_tau <- G_tau / sum(G_tau * diff(c(0, tau)))     # normalize
-  C0_vals <- C0_fun(t_today - tau)                  # Evaluate surface history at (t_today - tau)
-  integrand <- C0_vals * G_tau                      # Numerical integration (trapezoid rule)
-  C_xt <- sum(integrand * diff(c(0, tau)))
+  tau  <- seq(0.1, 80, by = 0.5)
+  dtau <- 0.5
+  # Transit time distribution
+  G_tau <- ttd(tau, Gamma, Delta)
+  # Normalize so integral = 1
+  G_tau <- G_tau / sum(G_tau * dtau)
+  # Surface boundary condition evaluated backward in time
+  C0_vals <- C0_fun(t_today - tau)
+  C0_vals[is.na(C0_vals)] <- 0
+  # Convolution
+  C_xt <- sum(C0_vals * G_tau * dtau)
   return(C_xt)
 }
+
 
 # F12_C_star - input to the system  #approx function,  
 cO<- read.csv("data/processed/recon_surf_f12_history.csv")
 
-# 
-# cO_fun <- approxfun(cO$year, cO$f12_C_star, rule = 2)
-cO_fun_xeff <- approxfun(cO$year, cO$f12_C_star_xeff, rule = 2)  #rule=2 allows extrapolation
-
+head(cO) 
+# cO_fun <- approxfun(cO$year, cO$f12_C_star, rule = 1)
+cO_fun_xeff <- approxfun(cO$year, cO$f12_C_star_xeff, rule = 1)  
 # ppt - input to the system
 # cO <- read.csv("data/processed/f12_sat_modeled.csv")
 # cO$xeff <- (cO$CFC12*cO$f12_sat_mod)/100
@@ -54,7 +59,7 @@ d$sigma2 <- swSigma2(d$CTDSAL,d$theta,d$CTDPRS)
 # d$cfc12_ppt <- d$cfc12*  120.91  #pmol/kg * 120.91g/mol * mol/1e12 pmol * 1e9 ng/g
 
 # year
-yr <- 2006
+yr <- 1992
 sigma_cut <- lsw_sigma$sigma2[lsw_sigma$year == yr]
 
 # look at different water masses
@@ -77,7 +82,7 @@ c_obs_neadw_sd <- sd(neadw$cfc12, na.rm = TRUE)
 
 
 # solving for gamma
-Gamma_seq <- seq(1, 200, by = 0.5)
+Gamma_seq <- seq(1, 80, by = 0.5)
 ratio <- 1.8
 Delta_seq <- ratio * Gamma_seq
 
