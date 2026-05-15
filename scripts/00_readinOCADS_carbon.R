@@ -107,13 +107,8 @@ d$year <- substr(d$DATE,1,4)
 unique(d$year)
 
 #clean column names
-grep("CFC", names(d), value = TRUE)
-grep("BTL", names(d), value = TRUE)
-
 d <- d %>%
   mutate(
-    cfc12 = coalesce(CFC.12, CFC12),
-    cfc12_flag = coalesce(CFC.12_FLAG_W,CFC12_FLAG_W),
     LATITUDE = coalesce(BTL_LAT,LATITUDE),
     LONGITUDE = coalesce(BTL_LON,LONGITUDE),
     )
@@ -124,27 +119,20 @@ names(d)
 ind <- which(d$EXPOCODE == "END_DATA")
 d <- d[-ind, ]
 
-d_tracer <- d %>%
+d_carbon <- d %>%
   select("EXPOCODE", "STNNBR", "BTLNBR", "SAMPNO","DATE",  "LATITUDE", "LONGITUDE",
          "CTDPRS","CTDTMP", "CTDSAL", "SALNTY" ,"OXYGEN" ,"OXYGEN_FLAG_W" , 
-         "SF6","SF6_FLAG_W","cfc12","cfc12_flag","year")
+         "TCARBN","TCARBN_FLAG_W","ALKALI","ALKALI_FLAG_W","year")
 
 
 #convert back to numeric
-library(dplyr)
-d_tracer <- d_tracer %>%
-  mutate(across(
-    c(LATITUDE, LONGITUDE,
-      CTDPRS, CTDTMP, CTDSAL, SALNTY,
-      OXYGEN,
-      SF6, cfc12),
-    as.numeric
-  ))
+d_carbon <- d_carbon %>%
+  mutate(across(c(LATITUDE, LONGITUDE,CTDPRS, CTDTMP, CTDSAL, SALNTY,OXYGEN,TCARBN, ALKALI),as.numeric))
 
 #make sure we didnt loose anything. 
-unique(d_tracer$year)
+unique(d_carbon$year)
 
-plot(d_tracer$LONGITUDE,d_tracer$LATITUDE)
+plot(d_carbon$LONGITUDE,d_carbon$LATITUDE)
 
 #get ar7w line
 
@@ -155,16 +143,10 @@ la <- c(56.1147, 56.5450, 56.9568, 57.3775, 57.8003, 58.2158, 59.4832, 59.7440,
 lo <- c(-53.1142, -52.6807, -52.2390, -51.7847,-51.3437, -50.8832, -49.4660,
         -49.1693, -48.8963, -49.9507, -50.4468)
 
-ar7w <- data.frame(
-  lat = la,
-  lon = lo
-)
-
-tol <- 0.2   # ~20 km-ish (roughly, good starting point)
-
+ar7w <- data.frame(lat = la,lon = lo)
+tol <- 0.2   # ~20 km from the line
 ar7w_data <- bind_rows(lapply(1:nrow(ar7w), function(i) {
-  
-  d_tracer %>%
+  d_carbon %>%
     filter(
       abs(LATITUDE - ar7w$lat[i]) < tol,
       abs(LONGITUDE - ar7w$lon[i]) < tol
@@ -172,16 +154,8 @@ ar7w_data <- bind_rows(lapply(1:nrow(ar7w), function(i) {
 }))
 
 plot(ar7w_data$LONGITUDE,ar7w_data$LATITUDE)
+
 unique(ar7w_data$year)
 
-#need to fix 1997, no CTDsal need to put Sal there...
-
-ar7w_data_1997 <- ar7w_data[ar7w_data$year==1997,]
-ar7w_data_1997$CTDSAL <- ar7w_data_1997$SALNTY
-
-
-ar7w_data <- ar7w_data[!(ar7w_data$year==1997),]
-ar7w_data <- rbind.data.frame(ar7w_data,ar7w_data_1997)
-
-write.csv(ar7w_data,"data/processed/OCADS_tracers_o2_ar7w.csv")
+write.csv(ar7w_data,"data/OCADS_carbon_ar7w.csv")
 

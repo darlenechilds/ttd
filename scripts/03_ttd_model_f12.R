@@ -23,7 +23,7 @@ ttd <- function(t, Gamma, Delta) {
 }
 
 compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
-  tau  <- seq(0.1, 80, by = 0.5)
+  tau  <- seq(0.1, 200, by = 0.5)
   dtau <- 0.5
   # Transit time distribution
   G_tau <- ttd(tau, Gamma, Delta)
@@ -37,18 +37,9 @@ compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
   return(C_xt)
 }
 
-
 # F12_C_star - input to the system  #approx function,  
 cO<- read.csv("data/processed/recon_surf_f12_history.csv")
-
-head(cO) 
-# cO_fun <- approxfun(cO$year, cO$f12_C_star, rule = 1)
 cO_fun_xeff <- approxfun(cO$year, cO$f12_C_star_xeff, rule = 1)  
-# ppt - input to the system
-# cO <- read.csv("data/processed/f12_sat_modeled.csv")
-# cO$xeff <- (cO$CFC12*cO$f12_sat_mod)/100
-# cO_fun_xeff <- approxfun(cO$year, cO$xeff, rule = 2)
-
 
 # measured data
 d <- read.csv("data/processed/OCADS_tracers_o2_ar7w.csv", stringsAsFactors = F)
@@ -59,7 +50,7 @@ d$sigma2 <- swSigma2(d$CTDSAL,d$theta,d$CTDPRS)
 # d$cfc12_ppt <- d$cfc12*  120.91  #pmol/kg * 120.91g/mol * mol/1e12 pmol * 1e9 ng/g
 
 # year
-yr <- 1992
+yr <- 2004
 sigma_cut <- lsw_sigma$sigma2[lsw_sigma$year == yr]
 
 # look at different water masses
@@ -82,7 +73,7 @@ c_obs_neadw_sd <- sd(neadw$cfc12, na.rm = TRUE)
 
 
 # solving for gamma
-Gamma_seq <- seq(1, 80, by = 0.5)
+Gamma_seq <- seq(1, 200, by = 0.5)
 ratio <- 1.8
 Delta_seq <- ratio * Gamma_seq
 
