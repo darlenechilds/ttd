@@ -58,6 +58,7 @@ filled.contour(
 
 Cant_mean <- colMeans(z.matrix, na.rm=TRUE)
 rho_mean  <- colMeans(rho.matrix, na.rm=TRUE)
+dz <- 10
 
 inventory <- sum(
   Cant_mean * rho_mean * dz,

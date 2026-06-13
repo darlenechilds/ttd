@@ -2,11 +2,13 @@ rm(list = ls())
 #compute fmolperkg from Xeff, surface TS, solubility constants
 
 #load sf6 modeled saturation 
-d <- read.csv("data/processed/sf6_sat_modeled.csv")
+d <- read.csv("data/processed/new/sf6_sat_modeled_new.csv")
+# d_obs <- read.csv("data/processed/new/sf6_sat_obs_new.csv")
+tail(d)
 
 # from 2020 IY et al., csas report
-es <- read.csv("data/raw/sal_Fig13_Yashayaev2020.csv",stringsAsFactors = F)
-et <- read.csv("data/raw/theta_Fig13_Yashayaev2020.csv",stringsAsFactors = F)
+es <- read.csv("data/raw/sal_Fig8_Yashayaev2023.csv",stringsAsFactors = F)
+et <- read.csv("data/raw/theta_Fig8_Yashayaev2023.csv",stringsAsFactors = F)
 
 es$yr <- floor(es$x)
 et$yr <- floor(et$x)
@@ -17,7 +19,7 @@ d <- merge(d,e,by = "year")  # dropping some data... may have to revisit
 tail(d)
 
 
-#calculate Xeff from modeled f12 sat
+#calculate Xeff from modeled sf6 sat
 d$xeff <- (d$SF6*d$sf6_sat_mod)/100
 
 # Solubiity function; Bulister et al., 2002, gravimetric - mol per kg per atm
@@ -39,6 +41,6 @@ sf6_p_atm <- d$SF6 / 1e12
 d$sf6_C_star <- d$sf6_F*sf6_p_atm*1e15  #fmol per kg
 
 
-write.csv(d,"data/processed/recon_surf_sf6_history.csv", row.names = F)
-
+write.csv(d,"data/processed/new/recon_surf_sf6_history_new.csv", row.names = F)
+plot(d$year,d$sf6_C_star_xeff)
 

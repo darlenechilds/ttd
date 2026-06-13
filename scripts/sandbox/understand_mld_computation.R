@@ -73,6 +73,7 @@ p <- ctd[["pressure"]]
 t <- ctd[["temperature"]]
 s <- ctd[["salinity"]]
 t_pot <- gsw_pt0_from_t(s,t,p)
+sa <- gsw_SA_from_SP(s, p,)
 
 #density plot
 sigma0 <- gsw_sigma0(s, t)
@@ -135,7 +136,8 @@ mld
 
 
 
-
+plot(runmed(grad_sigma, 21),-p, type = "l",xlim = c(-0.001,0.001))
+> points(c(threshold, threshold), c(0, -3500), type='l')
 
 
 
