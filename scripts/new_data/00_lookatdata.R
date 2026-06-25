@@ -1,6 +1,8 @@
 # Compute %Sat for 2016 - 2026
 rm(list = ls())
 library(oce)
+library(akima)
+
 sf6_solubility <- function(t, s) {
   T_k <- t + 273.15 # Convert temp to Kelvin
   sf6_Ln_F <- -82.1639+120.152*(100/T_k)+30.6372*log(T_k/100)+
@@ -53,41 +55,6 @@ d$year <- years[d$EXPOCODE]
 d$SA <- gsw_SA_from_SP(d$CTDSAL, d$CTDPRS, d$LONGITUDE, d$LATITUDE)
 d$CT <- gsw_CT_from_t(d$SA, d$CTDTMP, d$CTDPRS)
 d$sigma2 <- gsw_sigma2(d$SA,d$CT)
-
-
-library(akima)
-
-interp_sf6 <- with(d,
-                   interp(
-                     x = station_dist,
-                     y = pressure,
-                     z = sf6,
-                     duplicate = "mean"
-                   )
-)
-
-filled.contour(
-  interp_sf6$x,
-  interp_sf6$y,
-  interp_sf6$z,
-  ylim = rev(range(interp_sf6$y)),
-  xlab = "Distance (km)",
-  ylab = "Pressure (dbar)"
-)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 mld <- read.csv("data/raw/mld_Fig4_Yashayaev2024.csv")
 mld$year <- floor(mld$x)

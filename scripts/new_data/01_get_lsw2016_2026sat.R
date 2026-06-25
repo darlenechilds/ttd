@@ -65,7 +65,7 @@ f12_ppt$yr <- floor(f12_ppt$YEAR)
 
 
 
-
+uyear <- unique(d$year)
 s <- NULL
 i <- 2015
 for (i in 2012:2025){
