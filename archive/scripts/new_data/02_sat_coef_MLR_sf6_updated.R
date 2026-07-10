@@ -2,15 +2,15 @@ rm(list = ls())
 # Update Xeff usign equation 4 from Raimondi et al., for years 2016-2026 and add to the history from Raimondi et al., 
 
 #input
-mld_model <- read.csv("data/raw/Raimondi_MLD_S2.csv", header = T)
+mld_model <- read.csv("archive/data/raw/Raimondi_MLD_S2.csv", header = T)
 colnames(mld_model) <- c("year","mld")
-mld_iy <- read.csv("data/raw/mld_Fig4_Yashayaev2024.csv", header = T)
+mld_iy <- read.csv("archive/data/raw/mld_Fig4_Yashayaev2024.csv", header = T)
 mld_iy$yr <- floor(mld_iy$x)
 
 # plot(mld_iy$x,mld_iy$y, type = "b", xlim = c(1940,2026))
 # points(mld_model$year,mld_model$mld, col = "blue", type = "b")
 
-atm_sf6 <- read.csv("data/processed/sf6_atm.csv",header = T)
+atm_sf6 <- read.csv("archive/data/processed/sf6_atm.csv",header = T)
 
 # first derivative of the atmospheric input function 
 atm_sf6$year <- floor(atm_sf6$YEAR)
@@ -18,9 +18,9 @@ annual <- aggregate(SF6 ~ year, data = atm_sf6, FUN = mean)
 annual$dc_dt <- c(NA,diff(annual$SF6)/diff(annual$year))
 
 # add dc_dt to obs sat; 
-obs_sat_LR <- read.csv("data/raw/Raimondi_obs_sf6_sat_Fig3.csv")
+obs_sat_LR <- read.csv("archive/data/raw/Raimondi_obs_sf6_sat_Fig3.csv")
 obs_sat_LR$yr <- round(obs_sat_LR$yr)
-obs_sat_recent <- read.csv("data/processed/new/obs_sat_new.csv")
+obs_sat_recent <- read.csv("archive/data/processed/new/obs_sat_new.csv")
 
 obs_sat <- obs_sat_recent[, c("year", "sat_sf6")]
 names(obs_sat) <- c("yr", "obs_sf6_sat")

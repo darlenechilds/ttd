@@ -8,19 +8,19 @@ rm(list = ls())
 # compare results with paper
 
 #input
-mld_model <- read.csv("data/raw/Raimondi_MLD_S2.csv", header = T)
+mld_model <- read.csv("archive/data/raw/Raimondi_MLD_S2.csv", header = T)
 colnames(mld_model) <- c("year","mld")
-mld_iy <- read.csv("data/raw/mld_Fig4_Yashayaev2024.csv", header = T)
+mld_iy <- read.csv("archive/data/raw/mld_Fig4_Yashayaev2024.csv", header = T)
 
-plot(mld_iy$x,mld_iy$y, type = "b", xlim = c(1940,2026))
+plot(mld_iy$x,mld_iy$y, type = "b", xlim = c(1940,2026), col = "red")
 points(mld_model$year,mld_model$mld, col = "blue", type = "b")
 
-atm_sf6 <- read.csv("data/processed/sf6_atm.csv",header = T)
-atm_f12 <- read.csv("data/processed/f12_atm.csv",header = T)
+atm_sf6 <- read.csv("archive/data/processed/sf6_atm.csv",header = T)
+atm_f12 <- read.csv("archive/data/processed/f12_atm.csv",header = T)
 
 # first derative of the atmospheric input function 
 atm_f12$year <- floor(atm_f12$YEAR)
-annual <- aggregate(CFC12 ~ year, data = atm_f12, FUN = mean)
+annual <- aggregate(CFC12 ~ year, data = atm_f12, FUN = mean)   #mean of each year
 annual$dc_dt <- c(NA,diff(annual$CFC12)/diff(annual$year))
 
 atm_sf6$year <- floor(atm_sf6$YEAR)
@@ -28,7 +28,7 @@ annual_sf6 <- aggregate(SF6 ~ year, data = atm_sf6, FUN = mean)
 annual_sf6$dc_dt <- c(NA,diff(annual_sf6$SF6)/diff(annual_sf6$year))
 
 #dc_dt were added manually to; 
-obs_sat <- read.csv("data/raw/Raimondi_obs_f12_sat_Fig2.csv")
+obs_sat <- read.csv("archive/data/raw/Raimondi_obs_f12_sat_Fig2.csv")
 
 # MLR of observed saturation to est. sat years before f12 and sf6 were measured.  
 modeled_sat <- lm(obs_f12_sat ~ dc.dt  + mld_iy, data = obs_sat)
