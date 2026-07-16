@@ -12,7 +12,7 @@
 #       look at sf6 atm input, cal solubilites and rerun model 
 #       get MLD data, currently using digitize data from IY2024
  # ==========================================================
-
+library(oce)
 source("R/f12_solubility.r")
 source("R/get_lsw_f12sat.r")
 source("R/get_df12_dt.r")
@@ -43,8 +43,10 @@ c <- modeled_sat$coefficients[3]
 # model Fsat
 f <- merge(mld4, f12_dt, by = "yr")
 f$f12_sat_mod <- a + b * f$dc_dt + c * f$mld
+f$const_sat <- rep(80, length(f$yr))
 
 plot(f$yr,f$f12_sat_mod, ylim = c(30,110))
 points(d$yr,d$f12_sat, col = "blue")
+points(f$yr,f$const_sat,col = "green")
 
 write.csv(f,"data/processed/tv_f12_saturation.csv")

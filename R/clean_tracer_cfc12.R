@@ -17,10 +17,18 @@ clean_tracer_cfc12<- function(d) {
   d <- rbind(d,d_2025)
     
   #remove do = 0, -999
+  d <- d[!d$CFC12==0, ]
   d$CFC12[d$CFC12 == -999] <- NA
   d <- d[!is.na(d$CFC12), ]
   
+  #found while plotting profiles
+  d <- d[!d$SAMPNO==158456,]
+  d <- d[!d$SAMPNO %in% c(437822, 437823, 437824, 437825, 437826, 437827, 437828, 437829,
+                          437830, 437831, 437832, 437833, 437834),]
+  d <- d[!d$SAMPNO==515681,]
+  
   #found while computing gamma
   d <- d[!d$SAMPNO %in% c(437855, 437849, 437854, 437851, 437853, 437852), ]
+  d <- d[!is.na(d$CFC12), ]
   return(d)
 }

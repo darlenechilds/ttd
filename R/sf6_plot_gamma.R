@@ -30,7 +30,7 @@
    #get water masses
    surf <- d[d$CTDPRS > 10 & d$CTDPRS < 200,]
    lsw_int <- d[d$CTDPRS > 200 & d$CTDPRS < 2000,]
-   neadw <- d[d$sigma2 > 36.965 & d$sigma2 < 37.015,]
+   neadw <- d[d$sigma2 > 36.96 & d$sigma2 < 37.1,]
    dsow <- d[d$CTDPRS > 3480,]
    
    #means for each water mass for each year

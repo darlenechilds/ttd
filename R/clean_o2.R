@@ -30,6 +30,18 @@ clean_o2 <- function(d) {
   d <- d[!d$EXPOCODE=="33AT20220504",]
   # add 2022 back in
   d <- rbind.data.frame(d,d1)
+ 
+  # ctd salinity missing for 1997
+  d2 <- d[d$EXPOCODE=="  18HU19970509",]
+  d2$CTDSAL <- d2$SALNTY
+  d2$CTDSAL[d2$CTDSAL == -999] <- NA
+  d2 <- d2[!is.na(d2$CTDSAL), ]
+  
+  
+  
+  d <- d[!d$EXPOCODE=="  18HU19970509",]
+  # add 1997 back in
+  d <- rbind.data.frame(d,d2)
   
   return(d)
 }

@@ -10,7 +10,7 @@
 #     Improvements/updates include:
 #       obtain lsw sigma2 limits for 2017-2026
 #       look at sf6 obs. saturation and rerun model , for now use % sat from f12 model
-#       get MLD data, TS data, currently using digitize data from IY2024
+#       get MLD data, TS data, currently using digitize data from IY2024, also need recent data (2024-2026)
 # ==========================================================
 
 source("R/f12_solubility.r")
@@ -41,6 +41,10 @@ names(e) <- c("yr","CT","SA")
 #calculate Xeff, effective mole fraction (ppt) of f12 (equ 4 of LR2023)
 xeff_f12 <- (f12_sat_model$CFC12*f12_sat_model$f12_sat_mod)/100
 xeff_sf6 <- (f12_sat_model$SF6*f12_sat_model$f12_sat_mod)/100
+# const. saturation of 80%
+# xeff_f12 <- (f12_sat_model$CFC12*f12_sat_model$const_sat)/100
+# xeff_sf6 <- (f12_sat_model$SF6*f12_sat_model$const_sat)/100
+
 
 
 #calculate solubility

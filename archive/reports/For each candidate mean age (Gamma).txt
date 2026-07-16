@@ -1,0 +1,1 @@
+"For each candidate mean age (Gamma), the forward TTD model was used to predict the tracer concentration. The mean age assigned to each observation was the value whose predicted concentration most closely matched the observed concentration."

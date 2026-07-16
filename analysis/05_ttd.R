@@ -36,3 +36,8 @@ sf6 <- estimate_gamma(d_sf6, "SF6")
 
 f12_plot_gamma(f12)
 sf6_plot_gamma(sf6)
+
+write.csv(f12, "data/processed/f12_gamma.csv", row.names = F)
+write.csv(sf6, "data/processed/sf6_gamma.csv", row.names = F)
+
+

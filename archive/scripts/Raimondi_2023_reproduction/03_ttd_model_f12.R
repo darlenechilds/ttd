@@ -38,11 +38,11 @@ compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
 }
 
 # F12_C_star - input to the system  #approx function,  
-cO<- read.csv("data/processed/recon_surf_f12_history.csv")
+cO<- read.csv("archive/data/processed/recon_surf_f12_history.csv")
 cO_fun_xeff <- approxfun(cO$year, cO$f12_C_star_xeff, rule = 1)  
 
 # measured data
-d <- read.csv("data/processed/OCADS_tracers_o2_ar7w.csv", stringsAsFactors = F)
+d <- read.csv("archive/data/processed/OCADS_tracers_o2_ar7w.csv", stringsAsFactors = F)
 d <- d[d$cfc12_flag==2 | d$cfc12_flag==6,]  
 d <- d[!is.na(d$cfc12), ]
 d$theta <- swTheta(d$CTDSAL,d$CTDTMP,d$CTDPRS,referencePressure = 0)
@@ -50,7 +50,7 @@ d$sigma2 <- swSigma2(d$CTDSAL,d$theta,d$CTDPRS)
 # d$cfc12_ppt <- d$cfc12*  120.91  #pmol/kg * 120.91g/mol * mol/1e12 pmol * 1e9 ng/g
 
 # year
-yr <- 2004
+yr <- 2006
 sigma_cut <- lsw_sigma$sigma2[lsw_sigma$year == yr]
 
 # look at different water masses
@@ -110,6 +110,6 @@ e$gamma_best <- sapply(e$cfc12, function(obs) {
   Gamma_seq[which.min(abs(f12_mod_xeff - obs))]
 })
 
-fn <- paste("data/processed/gamma_best_",yr,".csv", sep = "")
+fn <- paste("archive/data/processed/gamma_best_",yr,".csv", sep = "")
 write.csv(e,fn, row.names = F)
 fn

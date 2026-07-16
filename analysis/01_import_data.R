@@ -25,6 +25,7 @@ source("R/clean_carbon_ta.r")
 source("R/clean_carbon_tic.r")
 source("R/get_noaa_atm_sf6.r")
 source("R/get_noaa_atm_f12.r")
+source("R/get_2026_data.r")
 
 
 #ocads data
@@ -46,6 +47,12 @@ o2 <- clean_o2(d)
 #get/clean tracer data
 f12 <- clean_tracer_cfc12(d)
 sf6 <- clean_tracer_sf6(d)
+
+#add 2026 data from SRC and add to datafile
+# f12_2026 <- get_2026_data("f12")
+# sf6_2026 <- get_2026_data("sf6")
+# f12 <- rbind(f12,f12_2026)
+# sf6 <- rbind(sf6,sf6_2026)
 
 #get/clean carbon data
 ta <- clean_carbon_ta(d)

@@ -20,9 +20,17 @@ clean_tracer_sf6<- function(d) {
   d$SF6[d$SF6 == -999] <- NA
   d <- d[!is.na(d$SF6), ]
   
-  #found bad data while qcing
+  #found bad data while plotting profiles
+  d <- d[!d$SAMPNO==433679,]
   d <- d[!d$SAMPNO==437830,]
+  d <- d[!d$SAMPNO %in% c(437822, 437823, 437824, 437825, 437826, 437827, 437828, 437829,
+                          437830, 437831, 437832, 437833, 437834),]
+  
+  d <- d[!d$SAMPNO %in% c(437846, 437847, 437848, 437856),]
+  
   #found while computing gamma
   d <- d[!d$SAMPNO %in% c(437855, 437849, 437854, 437850, 437851, 437853, 437852), ]
+  
+  
   return(d)
 }

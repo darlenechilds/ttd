@@ -27,13 +27,13 @@ compute_Cxt <- function(t_today, Gamma, Delta, C0_fun) {
 
 
 # input found gamma
-yr <- 2004
-fn <- paste("data/processed/gamma_best_",yr,".csv", sep = "")
+yr <- 2006
+fn <- paste("archive/data/processed/gamma_best_",yr,".csv", sep = "")
 d <- read.csv(fn, stringsAsFactors = F)
 
 
 # co2_cant_surf - input to the system
-cO <- read.csv("data/processed/surf_pco2_history.csv")
+cO <- read.csv("archive/data/processed/surf_pco2_history.csv")
 cO_fun <- approxfun(cO$yr, cO$dic_cant, rule = 1) 
 
 # have gamma

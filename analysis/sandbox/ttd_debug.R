@@ -9,5 +9,6 @@ obs <- d_f12$CFC12[15]
 lookup$Gamma[which.min(abs(lookup$tracer - obs))]
 
 
-lookup <- build_lookup_table(1992, "CFC12")
+lookup <- build_lookup_table(2019, "CFC12")
 names(lookup)
+which.min(lookup[["CFC12"]])
