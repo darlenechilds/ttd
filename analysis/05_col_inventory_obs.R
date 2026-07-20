@@ -29,6 +29,8 @@ stn_lswc <- unique(stn_3300$STNNBR)
 s <- s[s$STNNBR %in% stn_lswc, ]
 s$rho <- swRho(s$CTDSAL,s$CTDTMP,s$CTDPRS)
 
+#remove surf... for o2
+s <- s[s$CTDPRS>200,]
 
 uyr <- unique(s$yr)
 w <- data.frame()
@@ -38,8 +40,9 @@ for (i in uyr) {
   w <- rbind(w, data.frame(year = i,inventory = inv))
 }
 
-w <- order(w$year)
-plot(w$year,w$inventory,pch = 16, type = "b")
+w <- w[order(w$year),]
+plot(w$year,w$inventory,pch = 16, type = "b", main = "O2 Column inventory, 200m-btm, lat_mean_bw: 56-60",
+     ylab = "Inv. O2 (umol m-2)", xlab = "Year")
 
 
 write.csv(w,"data/processed/col_inv_o2.csv")

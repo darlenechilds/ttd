@@ -1,0 +1,42 @@
+---
+title: "Ventilation in the Labrador Sea"
+author: "childs"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  dev = "png",
+  echo = FALSE, warning=FALSE, message=FALSE
+  
+)
+```
+
+## Introduction
+Ventilation is the process of transporting atmospheric gases from the surface into the deep ocean.  Ventilation in the Labrador Sea occurs through wintertime deep convection.  Atmospheric cooling of the surface waters, increases the density and surface waters sink entraining high concentrations of oxygen, sulphur hexafluoride (sf6), dichlorodifluoromethane (cfc12) and other atmospheric gases into the interior ocean.  Newly formed Labrador Sea water (LSW) exits the Labrador sea through the Labrador current that flows southward along the Canadian continental shelves and the deep western boundary current (DWBC) that occupies the sub-surface.  This current flows anticlockwise along the eastern bank of Greenland (from Irminger basin), follows the bathemetry of the Labrador sea basin and continues southward long the western side of the Labrador basin, exporting dense, oxygen rich LSW towards the subtropics.  This current contributes to the lower limb of the Atlantic Meridonal overturning circulation (AMOC) (Handmann er al., 2018).  Recent studies (Guo et al., 2024, Koman et al., 2024), conclude that both the AMOC and ventilation has declined in the North Atlantic as a result of climate change.  Further, water mass ages, defined as the last time a parcel of water was in contact with the atmosphere, computed using transient tracer measurements have increased due to lack of ventilation.  Decreasing ventilation rates, decreases uptake of atmospheric oxygen where 40-70 % is consumed downstream (Koelling et al., 2022).   
+
+The Bedford Institute of Oceanography (BIO)/Department of Fisheries and Oceans (DFO) have maintained a important WOCE/CLIVAR/GOSHIP transect line (AR7W) since 1992.  Expeditions occur primarily in May in an attempt to capture the end of the wintertime deep convection.  Hydrographic, chemical and biological parameters are collected as part of the Atlantic Offshore Monitoring program (AZOMP).  This report presents observations of sf6, cfc12 and oxygen along with derived ventilation metrics, water mass ages (gamma), anthropogenic carbon (Cant) uptake and apparent oxygen utilization rates (AOUR; a measure of microbial consumption).  The derived ventilation metrics are estimated using the modified Inverse Gaussian time transit distribution (IR-TTD) method (Raimondi et al., 2023, Hall et al., 2002, 2004, Waugh et al., 2006).
+
+## Methods
+### Data sources
+The Ocean Carbon and Acidification Data System (OCADS) provided potential temperature, salinity, concentrations of anthropogenic transient tracers (sf6, fmol/kg), cfc12, pmol/kg), and the biogeochemical tracer (o2, umol/kg) for the years 1992-2025, see appendix xx for a table with urls for each year (Jiang et al., 2004).  Ocads data undergoes a secondary quality control analsyis, data flagged 2 (good) were filtered and compiled. Secondary qc analysis for 2025 and 2026 datasets were conducted using the toolbox of Lauvset and Tanhua, 2015.  Atmospheric data (sf6, cfc12, pco2) were obtained from NOAA Global Monitoring Labratory (Dutton and Hall 2024) for 1998 to 2026 and Bulister (2015) from 1936 to 2015.  A detailed description of cfc12 and sf6 measurements are found in Azetsu-Scott et al., 2005 and Punshon et al., 2016.  Winkler titrations of dissolved oxygen were obtained using the methods of Langdon 2010.  
+
+### Data Analysis
+
+The TTD is a distribution of transit times of water masses from the oceans surface to the interior which takes into account mixing processes (advective and diffusive).  Further, the concentration of an inert tracer (ie. sf6/cfc12/Cant) at a location (r) and time (t) can be related to its surface history and its time transit disitubution; 
+  c(r,t) = integral Co(t-tau)G(r,tau)dtau
+where, co(t=tau) is the history of the tracer concentration at the surface in tau years before the time of observation, t, cO is the boundary condition (input function = atmospheric history).  The input function used the time varying saturation model from Raimondi et al., 2023.   The G(r,tau) can be estimated from cfc12 and sf6 measurements assuming that the TTd takes the shape of an Inverse Gaussian function:
+  G(r, tau) = squr(gamma^3/4pidelta^2tau^3 * exp (=gamma(tau=gamma)^2/(4deltatau)))
+  with a mean age (gamma, first moment of G(r,t)) and a width (delta, second moment of G(r,t)).  The ratio of delta/gamma used in the calculations was 1.8 which has previously been determined for the North Atlantic by Guo et al,. 2024 and Raimondi et al., 2023. 
+  Anthropogenic carbon (cant) concentrations in the ocean interiour are estimated using the G(r,tau) and surface concentration history of Cant.  The surface history of Cant is obtained from atmospheric CO2 history, solubility of CO2, and total alkalinity at the time the water mass lost contact with the surface. 
+  Apparent oxygen utilization rate (AOUR) was calculated as;
+    AOUR = [O2sat - O2mean]/gamma.
+    where, gamma is the mean age for the ttd found in equation 1. 
+
+```{r sampling-analysis, echo=FALSE}
+
+
+```
+

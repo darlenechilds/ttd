@@ -5,8 +5,7 @@
 # Purpose:
 # Import all raw datasets required for the TTD analysis.
 #
-# Inputs:
-#   data/raw/
+# Inputs: Ocads/noaa (see raw/urls_ocads.csv/get_noaa_atm) 
 #
 # Outputs:
 #   data/processed/

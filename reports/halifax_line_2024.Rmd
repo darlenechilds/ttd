@@ -1,0 +1,141 @@
+---
+title: "Preliminary Sensitivity Assessment for Halifax Line 2024"
+author: "childs"
+date: "2026-05-11"
+output: word_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  dev = "png",
+  echo = FALSE, warning=FALSE, message=FALSE
+  
+)
+```
+
+## Prelimary Sensitivity Analysis
+
+This analysis uses measurements collected along the Halifax Line during Spring 2024. Within the Atlantic Zone Monitoring Program (AZMP), these observations are used to compute carbonate system metrics such as; pHtotal and the Carbonate System Vulnerability Index (CSVI). Here, these metrics, along with total inorganic carbon (TIC), are used to assess the sensitivity of calculated carbonate system properties to changes in sampling frequency.  Three sampling scenarios are assessed.  The first included all the data and is used as a reference (ie. 100% sampled).  The second scenario removed only surface samples between 10 and 50 meters (~66%) and the last removed every other sample (~50%).  The results are shown in the following table and plots.  
+
+
+```{r sampling-analysis, echo=FALSE}
+
+# function to compute metrics
+calc_metrics <- function(x) {
+  csvi <- x$TA_umol.kg - x$TIC_umol.kg
+  data.frame(dic_mean  = mean(x$TIC_umol.kg, na.rm = TRUE),
+             dic_sd    = sd(x$TIC_umol.kg, na.rm = TRUE),
+             pHt_mean  = mean(x$pH.out, na.rm = TRUE),
+             pHt_sd    = sd(x$pH.out, na.rm = TRUE),
+             csvi_mean = mean(csvi, na.rm = TRUE),
+             csvi_sd   = sd(csvi, na.rm = TRUE))}
+
+# ---------- BOTTOM ----------
+get_bottom <- function(d, n = 2) {
+  d_split <- split(d, interaction(d$cruise_number, d$event))
+  do.call(rbind, lapply(d_split, function(x) {
+    x <- x[order(x$PrDM, decreasing = TRUE), ]
+    head(x, n)
+  }))
+}
+
+# ---------- SURFACE ----------
+get_surface <- function(d, depth = 100) {
+  d[d$PrDM <= depth, ]
+}
+
+# Load data
+d_full <- read.csv("E:/A_docs/2026/2026_prelim_sens_assess/2024_hl.csv",stringsAsFactors = FALSE)
+
+# -----------------------------
+# 100% sampling
+# -----------------------------
+
+bottom2 <- get_bottom(d_full, n = 2)
+bottom_metrics <- calc_metrics(bottom2)
+
+surf100 <- get_surface(d_full, depth = 100)
+surface_metrics <- calc_metrics(surf100)
+
+metrics_100 <- rbind.data.frame(bottom_metrics, surface_metrics)
+metrics_100$layer <- c("Bottom", "Surface")
+metrics_100$sampled <- 100
+
+
+# -----------------------------
+# 66% sampling
+# remove depths between 10-50 m
+# -----------------------------
+
+d_66 <- d_full[!(d_full$PrDM < 50 & d_full$PrDM > 5), ]
+
+bottom2 <- get_bottom(d_66, n = 2)
+bottom_metrics <- calc_metrics(bottom2)
+
+surf100 <- get_surface(d_66, depth = 100)
+surface_metrics <- calc_metrics(surf100)
+
+metrics_66 <- rbind.data.frame(bottom_metrics, surface_metrics)
+metrics_66$layer <- c("Bottom", "Surface")
+metrics_66$sampled <- 66
+
+
+# -----------------------------
+# 50% sampling
+# every second sample
+# -----------------------------
+
+d_50 <- d_full[seq(2, nrow(d_full), by = 2), ]
+
+bottom2 <- get_bottom(d_50, n = 2)
+bottom_metrics <- calc_metrics(bottom2)
+
+surf100 <- get_surface(d_50, depth = 100)
+surface_metrics <- calc_metrics(surf100)
+
+metrics_50 <- rbind.data.frame(bottom_metrics, surface_metrics)
+metrics_50$layer <- c("Bottom", "Surface")
+metrics_50$sampled <- 50
+
+
+# -----------------------------
+# Combine all results
+# -----------------------------
+
+sum_metrics <- rbind.data.frame(metrics_100,metrics_66, metrics_50)
+
+sum_metrics
+
+```
+```{r plot}
+cols <- rep(c("blue", "black"),
+            length.out = nrow(sum_metrics))
+
+plot(x = sum_metrics$sampled,y = sum_metrics$pHt_mean,pch = 16,
+  col = cols, ylim = c(7.7, 7.85),ylab = "pHt", xlab = "% sampled")
+arrows(x0 = sum_metrics$sampled,y0 = sum_metrics$pHt_mean - sum_metrics$pHt_sd/2,
+  x1 = sum_metrics$sampled, y1 = sum_metrics$pHt_mean + sum_metrics$pHt_sd/2,
+  angle = 90, code = 3, length = 0.05)
+legend("topright",legend = c("Bottom", "Surface"),
+  col = c("blue", "black"), pch = 16, bty = "n")
+
+
+plot(x = sum_metrics$sampled,y = sum_metrics$dic_mean,pch = 16,
+  col = cols, ylim = c(2000,2200),ylab = "TIC_mean (umol per kg)", xlab = "% sampled")
+arrows(x0 = sum_metrics$sampled,y0 = sum_metrics$dic_mean - sum_metrics$dic_sd/2,
+  x1 = sum_metrics$sampled, y1 = sum_metrics$dic_mean + sum_metrics$dic_sd/2,
+  angle = 90, code = 3, length = 0.05)
+legend("topright",legend = c("Bottom", "Surface"),
+  col = c("blue", "black"), pch = 16, bty = "n")
+
+plot(x = sum_metrics$sampled,y = sum_metrics$csvi_mean,pch = 16,
+  col = cols, ylim = c(25,150),ylab = "CSVI_mean (umol per kg)", xlab = "% sampled")
+arrows(x0 = sum_metrics$sampled,y0 = sum_metrics$csvi_mean - sum_metrics$csvi_sd/2,
+  x1 = sum_metrics$sampled, y1 = sum_metrics$csvi_mean + sum_metrics$csvi_sd/2,
+  angle = 90, code = 3, length = 0.05)
+legend("topright",legend = c("Bottom", "Surface"),
+  col = c("blue", "black"), pch = 16, bty = "n")
+
+```
+

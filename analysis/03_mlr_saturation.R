@@ -1,10 +1,11 @@
 # ==========================================================
-# Script: 03_mlr_saturation.R
+# Script:   03_mlr_saturation.R
 #
 # Project:  ttd
 # Purpose: use MLR model of observed saturation to estimate sat. of f12 and sf6 b/f
 #   tracers were measured,  dependent = obs sat, 
 #   indep. = 1st derv. (dc/dt) of atm. input & max. MLD 
+# Outputs:  data/intermed/
 # 
 # Notes:  for now using LRs model based on f12 observed saturation, 
 #     Improvments/updates include:

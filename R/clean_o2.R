@@ -25,8 +25,7 @@ clean_o2 <- function(d) {
   conv <-  44.66 #(1 ml O2 = 44.66 umol O2 @ stp, derived from gas law, molar volume, 1 mole of O2 = 22.4 L, 1/22.3916*10^6)
   d1$OXYGEN <- d1$OXYGEN*conv/dens
   d1$CTDOXY <- d1$CTDOXY*conv/dens
-  
-  # remove 2022
+    # remove 2022
   d <- d[!d$EXPOCODE=="33AT20220504",]
   # add 2022 back in
   d <- rbind.data.frame(d,d1)
@@ -36,12 +35,18 @@ clean_o2 <- function(d) {
   d2$CTDSAL <- d2$SALNTY
   d2$CTDSAL[d2$CTDSAL == -999] <- NA
   d2 <- d2[!is.na(d2$CTDSAL), ]
-  
-  
-  
   d <- d[!d$EXPOCODE=="  18HU19970509",]
   # add 1997 back in
   d <- rbind.data.frame(d,d2)
+  
+  #outliers found while looking at central Labrador sea
+  #2012
+  d <- d[!d$SAMPNO %in% c(380640, 380234),]
+  
+  #2018
+  d <- d[!d$SAMPNO %in% c(),]
+  
+  
   
   return(d)
 }

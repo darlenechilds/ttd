@@ -107,6 +107,7 @@ for (j in ustn){
 #  o2 ###################################################################
 d <- read.csv("data/processed/ocads_clean_o2.csv")
 d$yr <- substr(d$DATE,1,4)
+d <- d[order(d$yr),]
 uyear <- as.numeric(unique(d$yr))
 d$theta <- swTheta(d$CTDSAL,d$CTDTMP,d$CTDPRS,referencePressure = 0)
 d$sigma2 <- swSigma2(d$CTDSAL,d$theta,d$CTDPRS)
@@ -125,9 +126,18 @@ plot(neadw$LONGITUDE,neadw$LATITUDE)
 d <- d[d$LATITUDE > 56 & d$LATITUDE < 60,]
 d <- d[d$LONGITUDE > -54.5 & d$LONGITUDE < -45,]
 plot(d$LONGITUDE,d$LATITUDE)
-i <- uyear[6]
+
+i <- uyear[26]
 for (i in uyear){
   e <- d[d$yr==i,]
   plot(e$OXYGEN,-e$CTDPRS, pch = 16, main = i, xlim = c(170,450))
   
+}
+
+# stns within yr
+ustn <- unique(e$STNNBR)
+j <- ustn[1]
+for (j in ustn){
+  f <- e[e$STNNBR==j,]
+  plot(f$OXYGEN,-f$CTDPRS,pch = 16, main = j, xlim = c(170,450), ylim = c(-3600, 0))
 }
